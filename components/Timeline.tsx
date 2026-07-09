@@ -175,6 +175,8 @@ export function Timeline({
                 />
                 <button
                   onClick={() => onOpenPost(post)}
+                  onMouseEnter={() => play(post.song)}
+                  onMouseLeave={() => isPlaying && stop()}
                   className={`stack-card paper relative rounded-sm text-left p-4 w-full ${twoCol ? "md:w-[46%]" : "md:w-[70%]"}`}
                   style={{ transform: `rotate(${col === "left" ? -0.6 : col === "right" ? 0.6 : 0.2}deg)` }}
                 >
