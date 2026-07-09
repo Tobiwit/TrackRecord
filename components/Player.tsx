@@ -42,12 +42,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const stop = useCallback(() => {
     audioRef.current?.pause();
     audioRef.current = null;
+    pauseActiveEmbed();
     setPlaying(false);
   }, []);
 
   const clear = useCallback(() => {
     audioRef.current?.pause();
     audioRef.current = null;
+    pauseActiveEmbed();
     setPlaying(false);
     setSong(null);
   }, []);
@@ -78,20 +80,100 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ---- Spotify iFrame Embed API ----
+   Loaded once; lets us start playback programmatically. Browsers only allow
+   audio after a user gesture on the page (clicking a card counts; hovering
+   does not) — when blocked, the embed still renders with its play button. */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let iframeApiPromise: Promise<any> | null = null;
+
+/** The now-playing bar's embed controller, so stop()/clear() can pause it. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let activeEmbedController: any = null;
+
+function pauseActiveEmbed() {
+  try {
+    activeEmbedController?.pause();
+  } catch {
+    /* iframe already gone */
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getIframeAPI(): Promise<any> {
+  if (!iframeApiPromise) {
+    iframeApiPromise = new Promise((resolve) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).onSpotifyIframeApiReady = (api: any) => resolve(api);
+      const script = document.createElement("script");
+      script.src = "https://open.spotify.com/embed/iframe-api/v1";
+      script.async = true;
+      document.body.appendChild(script);
+    });
+  }
+  return iframeApiPromise;
+}
+
 /** Spotify's embedded player for one track. Height 80 = compact variant. */
-export function SpotifyEmbed({ spotifyId, height = 80 }: { spotifyId: string; height?: number }) {
-  return (
-    <iframe
-      src={`https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator&theme=0`}
-      width="100%"
-      height={height}
-      frameBorder="0"
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-      title="Spotify player"
-      style={{ borderRadius: "8px", display: "block" }}
-    />
-  );
+export function SpotifyEmbed({
+  spotifyId,
+  height = 80,
+  autoplay = false,
+  isNowPlayingBar = false,
+}: {
+  spotifyId: string;
+  height?: number;
+  autoplay?: boolean;
+  /** registers this embed so the global stop()/clear() can pause it */
+  isNowPlayingBar?: boolean;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    let cancelled = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let controller: any = null;
+
+    // the API replaces the element we hand it, so give it a disposable child
+    const mount = document.createElement("div");
+    container.appendChild(mount);
+
+    getIframeAPI().then((api) => {
+      if (cancelled) return;
+      api.createController(
+        mount,
+        { uri: `spotify:track:${spotifyId}`, width: "100%", height },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (c: any) => {
+          controller = c;
+          if (isNowPlayingBar) activeEmbedController = c;
+          if (autoplay) {
+            c.addListener("ready", () => {
+              if (!cancelled) c.play();
+            });
+          }
+        }
+      );
+    });
+
+    return () => {
+      cancelled = true;
+      if (isNowPlayingBar && activeEmbedController === controller) {
+        activeEmbedController = null;
+      }
+      try {
+        controller?.destroy();
+      } catch {
+        /* iframe already gone */
+      }
+      container.innerHTML = "";
+    };
+  }, [spotifyId, height, autoplay, isNowPlayingBar]);
+
+  return <div ref={containerRef} style={{ minHeight: height }} />;
 }
 
 function NowPlayingBar() {
@@ -128,7 +210,7 @@ function NowPlayingBar() {
         </div>
         {embed ? (
           <div className="mt-2">
-            <SpotifyEmbed spotifyId={song.spotifyId!} />
+            <SpotifyEmbed spotifyId={song.spotifyId!} autoplay isNowPlayingBar />
           </div>
         ) : (
           !song.previewUrl &&

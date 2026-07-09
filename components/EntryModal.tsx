@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Post } from "@/lib/types";
 import { postDate } from "@/lib/types";
 import {
@@ -27,15 +27,23 @@ import { SpotifyEmbed, usePlayer } from "./Player";
  */
 export function EntryModal({ post, onClose }: { post: Post; onClose: () => void }) {
   const { db, currentUser } = useStore();
-  const { play, stop, song, playing } = usePlayer();
+  const { play, stop, song, playing, clear } = usePlayer();
   const [commentText, setCommentText] = useState("");
+
+  const hasEmbedSong = Boolean(post.song.spotifyId && !post.song.previewUrl);
+
+  // the modal renders its own player for embed songs — dismiss the global
+  // now-playing bar so two copies of the track don't play at once
+  useEffect(() => {
+    if (hasEmbedSong) clear();
+  }, [hasEmbedSong, clear]);
 
   const owner = db.users.find((u) => u.id === post.ownerUserId);
   const people = db.people.filter((p) => post.personIds.includes(p.id));
   const comments = commentsOf(db, post.id);
   const reactions = reactionsOf(db, post.id);
   const isPlaying = song === post.song && playing;
-  const hasEmbed = Boolean(post.song.spotifyId && !post.song.previewUrl);
+  const hasEmbed = hasEmbedSong;
   const isMine = currentUser?.id === post.ownerUserId;
   const event = post.eventType ? standardEvent(post.eventType) : undefined;
 
@@ -151,7 +159,7 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
             </div>
             {hasEmbed && (
               <div className="mt-2.5">
-                <SpotifyEmbed spotifyId={post.song.spotifyId!} />
+                <SpotifyEmbed spotifyId={post.song.spotifyId!} autoplay />
               </div>
             )}
           </div>

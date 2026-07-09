@@ -9,6 +9,16 @@ function song(i: number): Song {
   return MOCK_SONGS[i % MOCK_SONGS.length];
 }
 
+/** One real Spotify track in the demo data so the embedded player is testable. */
+export const SILVER_SPRINGS: Song = {
+  spotifyId: "4nZi6XNe36Ut4Nij3IQ1yC",
+  title: "Silver Springs - 2004 Remaster",
+  artist: "Fleetwood Mac",
+  album: "Rumours (Super Deluxe)",
+  albumArtUrl: "https://i.scdn.co/image/ab67616d00001e02e52a59a28efa4773dd2bfe1b",
+  externalUrl: "https://open.spotify.com/track/4nZi6XNe36Ut4Nij3IQ1yC",
+};
+
 function post(p: Omit<Post, "visibility" | "type"> & { type?: Post["type"] }): Post {
   return { visibility: "friends", type: p.eventType ? "standard_event" : "update", ...p };
 }
@@ -91,7 +101,7 @@ export function buildSeedDB(): DB {
       post({ id: "po_j3", ownerUserId: "u_june", personIds: ["p_dex"], eventType: "situationship", title: "Situationship detected", text: "He said 'labels are a construct' and I said 'so is rent' and honestly? We laughed.", moodIcon: "moon", song: song(8), createdAt: now - 32 * DAY }),
       post({ id: "po_j4", ownerUserId: "u_june", personIds: ["p_theo"], title: "He resurfaced.", text: "Three weeks of silence and then 'you up?' at 11:58pm. The audacity has its own gravitational field.", moodIcon: "lightning", song: song(5), createdAt: now - 18 * DAY }),
       post({ id: "po_j5", ownerUserId: "u_june", personIds: ["p_dex"], eventType: "sleepover", title: "Sleepover", text: "He made breakfast. It was one (1) egg. I'm choosing to see the effort.", moodIcon: "sun", song: song(26), createdAt: now - 9 * DAY }),
-      post({ id: "po_j6", ownerUserId: "u_june", personIds: ["p_theo", "p_dex"], title: "They were at the same show.", text: "Both of them. Same venue. I hid by the merch table and texted the group chat like it was air traffic control.", moodIcon: "flame", song: song(17), createdAt: now - 6 * HOUR }),
+      post({ id: "po_j6", ownerUserId: "u_june", personIds: ["p_theo", "p_dex"], title: "They were at the same show.", text: "Both of them. Same venue. I hid by the merch table and texted the group chat like it was air traffic control.", moodIcon: "flame", song: SILVER_SPRINGS, createdAt: now - 6 * HOUR }),
 
       // ---- Margot: romantic and promising ----
       post({ id: "po_m1", ownerUserId: "u_margot", personIds: ["p_sam"], eventType: "first_date", title: "First date", text: "We closed the wine bar down. The waiter gave us free dessert because we 'looked like a movie.'", moodIcon: "rose", song: song(9), createdAt: now - 55 * DAY }),

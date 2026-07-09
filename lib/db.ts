@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import type { Comment, DB, FriendRequest, Person, Post, Reaction, User } from "./types";
 import { postDate } from "./types";
-import { buildSeedDB } from "./seed";
+import { buildSeedDB, SILVER_SPRINGS } from "./seed";
 import { nextFreeColor } from "./colors";
 
 /**
@@ -37,7 +37,20 @@ function hydrate() {
     db = buildSeedDB();
   }
   if (!raw) persist();
+  migrate();
   sessionUserId = window.localStorage.getItem(SESSION_KEY);
+}
+
+/** In-place fixups for databases seeded by older versions of the app. */
+function migrate() {
+  if (!db) return;
+  // v1 seeds gave June's newest post a mock song; swap in the real Spotify
+  // track so the embedded player is testable without resetting demo data.
+  const juneTop = db.posts.find((p) => p.id === "po_j6");
+  if (juneTop && !juneTop.song.spotifyId) {
+    juneTop.song = SILVER_SPRINGS;
+    persist();
+  }
 }
 
 function persist() {

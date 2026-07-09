@@ -71,7 +71,7 @@ export function SongPicker({
         </div>
         {hasEmbed && (
           <div className="mt-2.5">
-            <SpotifyEmbed spotifyId={selected.spotifyId!} />
+            <SpotifyEmbed spotifyId={selected.spotifyId!} autoplay />
           </div>
         )}
       </div>
