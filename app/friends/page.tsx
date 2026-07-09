@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Shell } from "@/components/Shell";
 import { UserAvatar } from "@/components/Avatar";
@@ -11,10 +11,11 @@ import {
   postsOf,
   removeFriend,
   respondToRequest,
-  searchUsers,
+  searchUsersAsync,
   sendFriendRequest,
   useStore,
 } from "@/lib/db";
+import type { User } from "@/lib/types";
 import { timeAgo } from "@/lib/format";
 
 export default function FriendsPage() {
@@ -28,6 +29,24 @@ export default function FriendsPage() {
 function FriendsInner() {
   const { db, currentUser } = useStore();
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<User[]>([]);
+  const userId = currentUser?.id;
+
+  useEffect(() => {
+    if (!userId || !query.trim()) {
+      setResults([]);
+      return;
+    }
+    let stale = false;
+    const t = setTimeout(async () => {
+      const found = await searchUsersAsync(query, userId);
+      if (!stale) setResults(found);
+    }, 250);
+    return () => {
+      stale = true;
+      clearTimeout(t);
+    };
+  }, [query, userId]);
 
   if (!currentUser) return null;
 
@@ -38,7 +57,6 @@ function FriendsInner() {
   });
   const incoming = pendingRequestsFor(db, currentUser.id);
   const outgoing = outgoingRequestsFrom(db, currentUser.id);
-  const results = searchUsers(db, query, currentUser.id);
 
   const friendIds = new Set(friends.map((f) => f.id));
   const pendingIds = new Set([...incoming.map((r) => r.fromUserId), ...outgoing.map((r) => r.toUserId)]);

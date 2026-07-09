@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/db";
 
 export default function Index() {
-  const { currentUser } = useStore();
+  const { currentUser, ready } = useStore();
   const router = useRouter();
 
   useEffect(() => {
-    router.replace(currentUser ? "/home" : "/login");
-  }, [currentUser, router]);
+    if (ready) router.replace(currentUser ? "/home" : "/login");
+  }, [ready, currentUser, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

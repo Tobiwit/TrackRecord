@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Shell } from "@/components/Shell";
 import { UserAvatar } from "@/components/Avatar";
-import { logout, resetDemoData, updateProfile, useStore } from "@/lib/db";
+import { logout, resetDemoData, updateProfile, useStore, usingSupabase } from "@/lib/db";
 import { spotifyConfigured } from "@/lib/spotify";
 
 export default function SettingsPage() {
@@ -101,7 +101,11 @@ function SettingsInner() {
         <ul className="text-sm text-ink-soft mt-2 space-y-1 list-disc list-inside">
           <li>Your entries are visible only to accepted friends.</li>
           <li>Real photos of people you date are never displayed — only stylized avatars.</li>
-          <li>In demo mode, everything lives in your browser&apos;s local storage. Nothing leaves your device.</li>
+          {usingSupabase() ? (
+            <li>Your data lives in your Supabase project, guarded by row-level security.</li>
+          ) : (
+            <li>In demo mode, everything lives in your browser&apos;s local storage. Nothing leaves your device.</li>
+          )}
         </ul>
       </section>
 
@@ -110,25 +114,27 @@ function SettingsInner() {
         <h3 className="font-heading text-xl text-ink">The exit door</h3>
         <div className="flex flex-wrap gap-3 mt-3">
           <button
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               router.push("/login");
             }}
             className="btn-vintage rounded-sm px-4 py-2"
           >
             Log out
           </button>
-          <button
-            onClick={() => {
-              if (window.confirm("Reset all demo data? Your local entries will be replaced by the seeded demo.")) {
-                resetDemoData();
-                router.push("/login");
-              }
-            }}
-            className="text-sm underline text-burgundy/80 hover:text-burgundy self-center"
-          >
-            reset demo data
-          </button>
+          {!usingSupabase() && (
+            <button
+              onClick={() => {
+                if (window.confirm("Reset all demo data? Your local entries will be replaced by the seeded demo.")) {
+                  resetDemoData();
+                  router.push("/login");
+                }
+              }}
+              className="text-sm underline text-burgundy/80 hover:text-burgundy self-center"
+            >
+              reset demo data
+            </button>
+          )}
         </div>
       </section>
     </div>

@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [picture, setPicture] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   function onPickPicture(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -22,9 +23,12 @@ export default function SignupPage() {
     reader.readAsDataURL(file);
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const res = signup({ displayName, username, email, password, profilePictureUrl: picture ?? undefined });
+    if (busy) return;
+    setBusy(true);
+    const res = await signup({ displayName, username, email, password, profilePictureUrl: picture ?? undefined });
+    setBusy(false);
     if (!res.ok) {
       setError(res.error ?? "Something went wrong.");
       return;
@@ -81,8 +85,8 @@ export default function SignupPage() {
             You can connect Spotify later from Settings.
           </p>
           {error && <p className="text-sm text-burgundy italic">{error}</p>}
-          <button type="submit" className="btn-vintage w-full rounded-sm py-2.5 text-lg">
-            Press the First Track
+          <button type="submit" disabled={busy} className="btn-vintage w-full rounded-sm py-2.5 text-lg disabled:opacity-60">
+            {busy ? "Pressing…" : "Press the First Track"}
           </button>
         </form>
 

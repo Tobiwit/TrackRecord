@@ -23,22 +23,16 @@ const NAV = [
  * own mini stack), sticky top bar + bottom tab nav on mobile.
  */
 export function Shell({ children }: { children: React.ReactNode }) {
-  const { db, currentUser } = useStore();
+  const { db, currentUser, ready } = useStore();
   const router = useRouter();
   const pathname = usePathname();
   const [openPost, setOpenPost] = useState<Post | null>(null);
-  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    // store hydrates client-side; wait one tick before deciding auth
-    setChecked(true);
-  }, []);
+    if (ready && !currentUser) router.replace("/login");
+  }, [ready, currentUser, router]);
 
-  useEffect(() => {
-    if (checked && !currentUser) router.replace("/login");
-  }, [checked, currentUser, router]);
-
-  if (!checked || !currentUser) {
+  if (!ready || !currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="font-hand text-3xl text-sepia">flipping through the records…</p>

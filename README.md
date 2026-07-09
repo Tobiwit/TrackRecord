@@ -48,7 +48,7 @@ Copy `.env.example` to `.env.local`:
 | Variable | Purpose |
 | --- | --- |
 | `NEXT_PUBLIC_SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` | Enables real Spotify song search (client-credentials flow). Create an app at the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard). |
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Reserved for swapping the local data layer for Supabase (see below). |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Switches the app from local demo mode to a real shared Supabase backend (see "Going live with Supabase"). |
 
 Without Spotify credentials the app uses its in-house mock catalog — search still works, vinyls still spin, nothing blocks.
 
@@ -58,9 +58,21 @@ Without Spotify credentials the app uses its in-house mock catalog — search st
 - **Search results are capped at 10.** Development-mode Spotify apps reject `limit` values above 10 with `400 Invalid limit`.
 - **`preview_url` is always `null` for apps created after Nov 2024** — Spotify removed direct 30-second preview audio from the Web API. Playback therefore uses Spotify's **embedded player** (rendered on entries, in the song picker, and in the now-playing bar): everyone gets a 30-second preview, and browsers logged into Spotify get the full track. No user OAuth needed.
 
+## Going live with Supabase
+
+Without Supabase env vars the app runs in **local demo mode**: every browser gets its own private, seeded localStorage world (great for trying the app, useless for actually sharing with friends). To make it a real multi-user app:
+
+1. Create a project at [supabase.com](https://supabase.com) (free tier is fine).
+2. In **Settings → API Keys**, copy the **Project URL** and the **Publishable key** (newer projects show `sb_publishable_…` instead of the legacy "anon" key — either works).
+3. In **Authentication → Sign In / Up → Email**, turn **off "Confirm email"** (or leave it on and let users confirm via the emailed link before logging in).
+4. Open the **SQL editor**, paste the whole of [`supabase/schema.sql`](supabase/schema.sql), and run it. This creates all tables, helper functions, and the row-level-security policies that enforce the friends-only boundary server-side.
+5. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local` (restart the dev server) and in Vercel → Settings → Environment Variables (redeploy).
+
+The app detects the env vars and switches automatically: real signup/login (the `test/admin` fallback disappears), friend search queries the database, and every mutation is applied optimistically then mirrored to Supabase. Friends' new posts are pulled in on login and whenever the tab regains focus.
+
 ## Architecture notes
 
-- **`lib/db.ts` is the single data boundary.** Every screen reads through `useStore()` and mutates through exported functions (`createPost`, `sendFriendRequest`, …). To move to Supabase/Firestore, reimplement this module; no UI changes needed. The entity shapes in `lib/types.ts` map 1:1 to tables/collections.
+- **`lib/db.ts` is the single data boundary.** Every screen reads through `useStore()` and mutates through exported functions (`createPost`, `sendFriendRequest`, …). It has two backends: localStorage (demo) and Supabase (`lib/remote.ts` + `lib/supabase.ts`), selected by env vars at build time. The entity shapes in `lib/types.ts` map 1:1 to the tables in `supabase/schema.sql`.
 - **`lib/spotify.ts`** picks real search vs. mock catalog at call time.
 - **Privacy by design:** uploaded photos of dating subjects are never rendered; `components/Avatar.tsx` generates consistent stylized vintage avatars (accent color + ink motif + initial) instead.
 - **Demo reset:** Settings → "reset demo data" restores the seeded state.

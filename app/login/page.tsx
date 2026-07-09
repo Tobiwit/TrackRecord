@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { login } from "@/lib/db";
+import { login, usingSupabase } from "@/lib/db";
 import { Vinyl } from "@/components/Vinyl";
 import { Butterfly, MoonFace, Sprig, SunFace } from "@/components/Ornaments";
 
@@ -13,9 +13,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  function submit(e: React.FormEvent) {
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const res = login(usernameOrEmail, password);
+    if (busy) return;
+    setBusy(true);
+    const res = await login(usernameOrEmail, password);
+    setBusy(false);
     if (res.ok) router.push("/home");
     else setError(res.error ?? "Something went wrong.");
   }
@@ -69,8 +74,8 @@ export default function LoginPage() {
             className="vintage w-full rounded-sm px-3 py-2"
           />
           {error && <p className="text-sm text-burgundy italic">{error}</p>}
-          <button type="submit" className="btn-vintage w-full rounded-sm py-2.5 text-lg">
-            Open the Record
+          <button type="submit" disabled={busy} className="btn-vintage w-full rounded-sm py-2.5 text-lg disabled:opacity-60">
+            {busy ? "Dropping the needle…" : "Open the Record"}
           </button>
         </form>
 
@@ -81,9 +86,11 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        <p className="font-hand text-center text-sepia mt-4 text-lg rotate-[-1deg]">
-          testing? try <span className="font-type not-italic text-sm">test / admin</span>
-        </p>
+        {!usingSupabase() && (
+          <p className="font-hand text-center text-sepia mt-4 text-lg rotate-[-1deg]">
+            testing? try <span className="font-type not-italic text-sm">test / admin</span>
+          </p>
+        )}
       </div>
     </div>
   );
