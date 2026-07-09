@@ -47,10 +47,16 @@ Copy `.env.example` to `.env.local`:
 
 | Variable | Purpose |
 | --- | --- |
-| `NEXT_PUBLIC_SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` | Enables real Spotify song search + 30s previews (client-credentials flow). Create an app at the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard). |
+| `NEXT_PUBLIC_SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` | Enables real Spotify song search (client-credentials flow). Create an app at the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard). |
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Reserved for swapping the local data layer for Supabase (see below). |
 
 Without Spotify credentials the app uses its in-house mock catalog — search still works, vinyls still spin, nothing blocks.
+
+**Spotify gotchas (learned the hard way):**
+
+- **Restart the dev server after editing `.env.local`** — Next.js reads env files at startup only, and `NEXT_PUBLIC_*` values are inlined at compile time.
+- **Search results are capped at 10.** Development-mode Spotify apps reject `limit` values above 10 with `400 Invalid limit`.
+- **`preview_url` is always `null` for apps created after Nov 2024** — Spotify removed direct 30-second preview audio from the Web API. Playback therefore uses Spotify's **embedded player** (rendered on entries, in the song picker, and in the now-playing bar): everyone gets a 30-second preview, and browsers logged into Spotify get the full track. No user OAuth needed.
 
 ## Architecture notes
 
