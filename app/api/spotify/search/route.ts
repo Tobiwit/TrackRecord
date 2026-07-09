@@ -38,11 +38,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Spotify not configured" }, { status: 503 });
   }
 
+  // Note: development-mode Spotify apps reject limit > 10 ("Invalid limit")
   const res = await fetch(
-    `https://api.spotify.com/v1/search?type=track&limit=12&q=${encodeURIComponent(q)}`,
+    `https://api.spotify.com/v1/search?type=track&limit=10&q=${encodeURIComponent(q)}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   if (!res.ok) {
+    const body = await res.text();
+    console.error(`Spotify search failed: ${res.status}`, body.slice(0, 300));
     return NextResponse.json({ error: "Spotify search failed" }, { status: 502 });
   }
   const data = await res.json();

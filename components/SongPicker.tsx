@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Song } from "@/lib/types";
 import { searchSongs, spotifyConfigured } from "@/lib/spotify";
 import { Vinyl } from "./Vinyl";
-import { usePlayer } from "./Player";
+import { SpotifyEmbed, usePlayer } from "./Player";
 
 /** Search-and-select a song. No song, no lore. */
 export function SongPicker({
@@ -35,35 +35,45 @@ export function SongPicker({
 
   if (selected) {
     const isPlaying = song === selected && playing;
+    const hasEmbed = Boolean(selected.spotifyId && !selected.previewUrl);
     return (
-      <div className="paper-deep rounded-sm p-3 flex items-center gap-3 border-burgundy/40">
-        {selected.albumArtUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={selected.albumArtUrl} alt="" className="w-12 h-12 rounded-sm object-cover border border-ink/20" />
-        ) : (
-          <Vinyl size={48} spinning={isPlaying} />
+      <div className="paper-deep rounded-sm p-3 border-burgundy/40">
+        <div className="flex items-center gap-3">
+          {selected.albumArtUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={selected.albumArtUrl} alt="" className="w-12 h-12 rounded-sm object-cover border border-ink/20" />
+          ) : (
+            <Vinyl size={48} spinning={isPlaying} />
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="font-hand text-lg text-sepia leading-none">track added ♪</p>
+            <p className="font-heading text-ink truncate">{selected.title}</p>
+            <p className="text-sm text-ink-soft italic truncate">{selected.artist}</p>
+          </div>
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            {!hasEmbed && (
+              <button
+                type="button"
+                onClick={() => (isPlaying ? stop() : play(selected))}
+                className="text-sm font-heading text-espresso hover:text-burgundy"
+              >
+                {isPlaying ? "◼ stop" : "▶ preview"}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => onSelect(null)}
+              className="text-xs underline text-ink-soft hover:text-burgundy"
+            >
+              change song
+            </button>
+          </div>
+        </div>
+        {hasEmbed && (
+          <div className="mt-2.5">
+            <SpotifyEmbed spotifyId={selected.spotifyId!} />
+          </div>
         )}
-        <div className="min-w-0 flex-1">
-          <p className="font-hand text-lg text-sepia leading-none">track added ♪</p>
-          <p className="font-heading text-ink truncate">{selected.title}</p>
-          <p className="text-sm text-ink-soft italic truncate">{selected.artist}</p>
-        </div>
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          <button
-            type="button"
-            onClick={() => (isPlaying ? stop() : play(selected))}
-            className="text-sm font-heading text-espresso hover:text-burgundy"
-          >
-            {isPlaying ? "◼ stop" : "▶ preview"}
-          </button>
-          <button
-            type="button"
-            onClick={() => onSelect(null)}
-            className="text-xs underline text-ink-soft hover:text-burgundy"
-          >
-            change song
-          </button>
-        </div>
       </div>
     );
   }

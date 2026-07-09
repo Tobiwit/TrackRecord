@@ -19,7 +19,7 @@ import { REACTION_TYPES, reactionLabel } from "@/lib/reactions";
 import { MoodIcon } from "./MoodIcon";
 import { Vinyl } from "./Vinyl";
 import { PersonAvatar, UserAvatar } from "./Avatar";
-import { usePlayer } from "./Player";
+import { SpotifyEmbed, usePlayer } from "./Player";
 
 /**
  * Full-size entry view — a page torn out of the scrapbook.
@@ -35,6 +35,7 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
   const comments = commentsOf(db, post.id);
   const reactions = reactionsOf(db, post.id);
   const isPlaying = song === post.song && playing;
+  const hasEmbed = Boolean(post.song.spotifyId && !post.song.previewUrl);
   const isMine = currentUser?.id === post.ownerUserId;
   const event = post.eventType ? standardEvent(post.eventType) : undefined;
 
@@ -111,39 +112,48 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
           )}
 
           {/* the song */}
-          <div className="mt-5 paper-deep rounded-sm p-3 flex items-center gap-3 border border-ink/15">
-            {post.song.albumArtUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={post.song.albumArtUrl} alt="" className="w-14 h-14 rounded-sm object-cover border border-ink/20" />
-            ) : (
-              <Vinyl size={56} spinning={isPlaying} labelColor={accent(people[0]?.color ?? "gold").hex} />
-            )}
-            <div className="min-w-0 flex-1">
-              <p className="font-hand text-lg text-sepia leading-none">the soundtrack</p>
-              <p className="font-heading text-ink truncate">{post.song.title}</p>
-              <p className="text-sm text-ink-soft italic truncate">
-                {post.song.artist}
-                {post.song.album ? ` — ${post.song.album}` : ""}
-              </p>
-            </div>
-            <div className="flex flex-col gap-1 items-end shrink-0">
-              <button
-                onClick={() => (isPlaying ? stop() : play(post.song))}
-                className="btn-vintage rounded-sm px-3 py-1 text-sm"
-              >
-                {isPlaying ? "◼ Stop" : "▶ Play"}
-              </button>
-              {post.song.externalUrl && (
-                <a
-                  href={post.song.externalUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[11px] underline text-ink-soft hover:text-burgundy"
-                >
-                  Open in Spotify
-                </a>
+          <div className="mt-5 paper-deep rounded-sm p-3 border border-ink/15">
+            <div className="flex items-center gap-3">
+              {post.song.albumArtUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={post.song.albumArtUrl} alt="" className="w-14 h-14 rounded-sm object-cover border border-ink/20" />
+              ) : (
+                <Vinyl size={56} spinning={isPlaying} labelColor={accent(people[0]?.color ?? "gold").hex} />
               )}
+              <div className="min-w-0 flex-1">
+                <p className="font-hand text-lg text-sepia leading-none">the soundtrack</p>
+                <p className="font-heading text-ink truncate">{post.song.title}</p>
+                <p className="text-sm text-ink-soft italic truncate">
+                  {post.song.artist}
+                  {post.song.album ? ` — ${post.song.album}` : ""}
+                </p>
+              </div>
+              <div className="flex flex-col gap-1 items-end shrink-0">
+                {!hasEmbed && (
+                  <button
+                    onClick={() => (isPlaying ? stop() : play(post.song))}
+                    className="btn-vintage rounded-sm px-3 py-1 text-sm"
+                  >
+                    {isPlaying ? "◼ Stop" : "▶ Play"}
+                  </button>
+                )}
+                {post.song.externalUrl && (
+                  <a
+                    href={post.song.externalUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] underline text-ink-soft hover:text-burgundy"
+                  >
+                    Open in Spotify
+                  </a>
+                )}
+              </div>
             </div>
+            {hasEmbed && (
+              <div className="mt-2.5">
+                <SpotifyEmbed spotifyId={post.song.spotifyId!} />
+              </div>
+            )}
           </div>
 
           {/* reactions */}

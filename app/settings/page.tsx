@@ -72,21 +72,25 @@ function SettingsInner() {
         <h3 className="font-heading text-xl text-ink">Spotify</h3>
         {spotifyConfigured() ? (
           <>
-            <p className="text-sm text-ink-soft mt-1">
-              Spotify search is wired up. Song lookups use the real catalog.
+            <p className="text-[15px] text-ink mt-1">
+              <span className="font-type text-xs uppercase tracking-wider text-olive border border-olive/50 rounded-sm px-1.5 py-0.5 mr-2">
+                active
+              </span>
+              Song search runs on the real Spotify catalog.
             </p>
-            <button
-              onClick={() => updateProfile(currentUser.id, { spotifyConnected: !currentUser.spotifyConnected })}
-              className="btn-vintage rounded-sm px-4 py-2 mt-3"
-            >
-              {currentUser.spotifyConnected ? "Disconnect" : "Connect Spotify"}
-            </button>
+            <p className="text-sm text-ink-soft mt-2">
+              Playback uses Spotify&apos;s embedded player on each entry — everyone hears a 30-second
+              preview, and if this browser is logged into Spotify you&apos;ll hear the full track. (Spotify
+              no longer offers direct preview audio to new apps, so the embed is the real deal.)
+            </p>
           </>
         ) : (
           <p className="text-sm text-ink-soft mt-1">
             Not configured — the app is spinning its own house catalog instead. To enable real
             search, set <code className="text-xs bg-espresso/10 px-1 rounded">NEXT_PUBLIC_SPOTIFY_CLIENT_ID</code> and{" "}
-            <code className="text-xs bg-espresso/10 px-1 rounded">SPOTIFY_CLIENT_SECRET</code> (see README).
+            <code className="text-xs bg-espresso/10 px-1 rounded">SPOTIFY_CLIENT_SECRET</code> in{" "}
+            <code className="text-xs bg-espresso/10 px-1 rounded">.env.local</code>, then restart the dev
+            server (see README).
           </p>
         )}
       </section>
