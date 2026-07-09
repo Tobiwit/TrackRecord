@@ -123,7 +123,6 @@ function PersonForm({
   const [metWhere, setMetWhere] = useState("");
   const [firstDate, setFirstDate] = useState("");
   const [color, setColor] = useState<string>("");
-  const [hasPhoto, setHasPhoto] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function submit(e: React.FormEvent) {
@@ -183,14 +182,9 @@ function PersonForm({
         })}
       </div>
 
-      {/* picture */}
-      <label className="block mt-4 text-sm text-ink-soft">
-        <span className="font-hand text-xl text-sepia">picture (optional)</span>
-        <input type="file" accept="image/*" onChange={(e) => setHasPhoto(Boolean(e.target.files?.length))} className="block mt-1 text-xs" />
-      </label>
-      <p className="text-xs text-ink-soft italic mt-2 border-l-2 pl-2 ink-line">
-        Privacy first: real photos are never shown anywhere. {hasPhoto ? "We'll use it only to keep a consistent " : "Each person gets a "}
-        stylized vintage avatar instead. Only upload images you&apos;re allowed to use.
+      <p className="text-xs text-ink-soft italic mt-4 border-l-2 pl-2 ink-line">
+        Privacy first: no real photos, ever. Each person gets a consistent stylized vintage
+        avatar drawn from their name and color.
       </p>
 
       {error && <p className="text-sm text-burgundy italic mt-2">{error}</p>}
