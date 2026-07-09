@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { IM_Fell_English, IM_Fell_English_SC, EB_Garamond, Special_Elite, La_Belle_Aurore } from "next/font/google";
-import { DeskScribbles } from "@/components/DeskScribbles";
 import "./globals.css";
 
 const fell = IM_Fell_English({
@@ -50,7 +49,6 @@ export default function RootLayout({
       <body
         className={`${fell.variable} ${fellSC.variable} ${garamond.variable} ${typewriter.variable} ${aurore.variable} antialiased`}
       >
-        <DeskScribbles />
         {children}
       </body>
     </html>
