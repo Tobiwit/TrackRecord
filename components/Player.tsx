@@ -78,7 +78,7 @@ function NowPlayingBar() {
           <p className="font-heading text-sm text-ink truncate">{song.title}</p>
           <p className="text-xs text-ink-soft italic truncate">{song.artist}</p>
           {!song.previewUrl && playing && (
-            <p className="font-hand text-xs text-espresso/80">no preview — vibe along</p>
+            <p className="font-hand text-base text-sepia leading-none">no preview — vibe along</p>
           )}
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">

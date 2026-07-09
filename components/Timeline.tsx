@@ -65,16 +65,16 @@ export function Timeline({
       <div className="flex items-center gap-4 flex-wrap">
         <UserAvatar user={owner} size={64} />
         <div className="min-w-0">
-          <h2 className="font-heading text-2xl md:text-3xl text-cream">{owner.displayName}</h2>
-          <p className="text-cream/60 text-sm">@{owner.username}</p>
+          <h2 className="font-title text-3xl md:text-4xl text-ink">{owner.displayName}</h2>
+          <p className="text-sepia font-type text-xs tracking-wide">@{owner.username}</p>
         </div>
         {activePeople.length > 0 && (
           <div className="flex items-center gap-2 ml-auto">
-            <span className="font-hand text-gold/80 text-lg">currently in the lore:</span>
+            <span className="font-hand text-sepia text-xl rotate-[-2deg]">currently in the lore:</span>
             {activePeople.map((p) => (
               <span key={p.id} className="flex items-center gap-1" title={p.nickname ?? p.name}>
                 <PersonAvatar person={p} size={26} />
-                <span className="text-sm text-cream/80 italic">{p.name}</span>
+                <span className="text-sm text-ink-soft italic">{p.name}</span>
               </span>
             ))}
           </div>
@@ -122,7 +122,7 @@ export function Timeline({
         </select>
         <button
           onClick={() => setOrder(order === "newest" ? "oldest" : "newest")}
-          className="ml-auto text-cream/70 hover:text-cream underline underline-offset-4"
+          className="ml-auto text-ink-soft hover:text-ink underline underline-offset-4"
         >
           {order === "newest" ? "newest first ↓" : "from the beginning ↑"}
         </button>
@@ -132,10 +132,10 @@ export function Timeline({
       {twoCol && (
         <div className="mt-4 flex justify-between text-sm px-2">
           {columnPeople.map((p, i) => (
-            <span key={p.id} className="flex items-center gap-1.5" style={{ color: accent(p.color).hex }}>
-              {i === 1 && <span className="text-cream/40 font-hand">the other line —</span>}
+            <span key={p.id} className="flex items-center gap-1.5">
+              {i === 1 && <span className="text-sepia font-hand text-lg">the other line —</span>}
               <PersonAvatar person={p} size={22} />
-              <span className="italic text-cream/80">{p.name}&apos;s side</span>
+              <span className="italic text-ink-soft">{p.name}&apos;s side</span>
             </span>
           ))}
         </div>
@@ -143,13 +143,13 @@ export function Timeline({
 
       {/* the timeline */}
       <div className="relative mt-6">
-        {/* spine */}
-        <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-px bg-cream/15" aria-hidden />
+        {/* spine: a length of stitched thread */}
+        <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-px border-l border-dashed border-ink/30" aria-hidden />
         <div className="space-y-6">
           {filtered.length === 0 && (
             <div className="paper rounded-sm max-w-sm mx-auto p-6 text-center relative" style={{ transform: "rotate(0.4deg)" }}>
-              <p className="font-heading text-lg text-ink">No updates yet.</p>
-              <p className="font-hand text-lg text-espresso/80 mt-1 leading-snug">
+              <p className="font-heading text-xl text-ink">No updates yet.</p>
+              <p className="font-hand text-xl text-sepia mt-1 leading-snug">
                 Either peace has finally found you,
                 <br />
                 or you&apos;re gatekeeping the lore.
@@ -160,10 +160,7 @@ export function Timeline({
             const col = columnFor(post);
             const isPlaying = song === post.song && playing;
             const postPeople = people.filter((p) => post.personIds.includes(p.id));
-            const stripe =
-              postPeople.length >= 2
-                ? `linear-gradient(to bottom, ${accent(postPeople[0].color).hex} 50%, ${accent(postPeople[1].color).hex} 50%)`
-                : accent(postPeople[0]?.color ?? "moon").hex;
+            const tapeCols = postPeople.map((p) => accent(p.color).hex);
             const event = post.eventType ? standardEvent(post.eventType) : undefined;
             return (
               <div
@@ -172,7 +169,7 @@ export function Timeline({
               >
                 {/* node on the spine */}
                 <span
-                  className="absolute left-1/2 top-6 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-night"
+                  className="absolute left-1/2 top-6 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-card"
                   style={{ background: accent(postPeople[0]?.color ?? "gold").hex }}
                   aria-hidden
                 />
@@ -181,27 +178,34 @@ export function Timeline({
                   className={`stack-card paper relative rounded-sm text-left p-4 w-full ${twoCol ? "md:w-[46%]" : "md:w-[70%]"}`}
                   style={{ transform: `rotate(${col === "left" ? -0.6 : col === "right" ? 0.6 : 0.2}deg)` }}
                 >
-                  <span
-                    className="absolute left-0 top-2 bottom-2 w-1 rounded-r"
-                    style={{ background: stripe }}
-                    aria-hidden
-                  />
-                  <div className="pl-2">
+                  {tapeCols.length >= 2 ? (
+                    <>
+                      <span className="tape w-12 -top-1.5 left-4 rotate-[-13deg]" style={{ background: `${tapeCols[0]}66` }} aria-hidden />
+                      <span className="tape w-12 -top-1.5 right-4 rotate-[11deg]" style={{ background: `${tapeCols[1]}66` }} aria-hidden />
+                    </>
+                  ) : (
+                    <span
+                      className="tape w-12 -top-1.5 left-5 rotate-[-8deg]"
+                      style={{ background: `${tapeCols[0] ?? accent("moon").hex}66` }}
+                      aria-hidden
+                    />
+                  )}
+                  <div>
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="font-hand text-espresso/80 text-sm leading-none">{formatDate(postDate(post))}</p>
+                        <p className="font-type text-sepia text-[11px] leading-none tracking-wide">{formatDate(postDate(post))}</p>
                         {event && (
-                          <span className="inline-block mt-1 uppercase tracking-[0.18em] text-[9px] text-burgundy border border-burgundy/40 rounded-sm px-1 py-px">
+                          <span className="inline-block mt-1 font-type uppercase tracking-[0.14em] text-[9px] text-burgundy border border-burgundy/50 rounded-sm px-1 py-px">
                             {event.label}
                           </span>
                         )}
-                        <h3 className="font-heading text-lg text-ink leading-snug mt-0.5">{post.title}</h3>
+                        <h3 className="font-heading text-xl text-ink leading-snug mt-0.5">{post.title}</h3>
                       </div>
                       <span className="text-espresso shrink-0 flex flex-col items-center" title={mood(post.moodIcon).label}>
                         <MoodIcon moodKey={post.moodIcon} className="w-5 h-5" />
                       </span>
                     </div>
-                    {post.text && <p className="mt-1.5 text-sm text-ink-soft italic line-clamp-3">{post.text}</p>}
+                    {post.text && <p className="mt-1.5 text-[15px] text-ink-soft italic line-clamp-3">{post.text}</p>}
                     <div className="mt-2 pt-2 border-t border-dashed ink-line flex items-center gap-2">
                       <span
                         onClick={(e) => {
@@ -213,8 +217,8 @@ export function Timeline({
                       >
                         <Vinyl size={30} spinning={isPlaying} labelColor={accent(postPeople[0]?.color ?? "gold").hex} />
                       </span>
-                      <p className="text-xs text-ink-soft truncate">
-                        <span className="font-heading text-ink text-sm">{post.song.title}</span>
+                      <p className="text-sm text-ink-soft truncate">
+                        <span className="font-heading text-ink text-[15px]">{post.song.title}</span>
                         <span className="italic"> — {post.song.artist}</span>
                       </p>
                       {postPeople.length > 0 && (

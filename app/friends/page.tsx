@@ -45,8 +45,8 @@ function FriendsInner() {
 
   return (
     <div className="p-4 md:p-8 max-w-2xl mx-auto">
-      <h2 className="font-heading text-2xl md:text-3xl text-cream">The Audience</h2>
-      <p className="font-hand text-gold/80 text-lg">only they get to hear the record</p>
+      <h2 className="font-title text-3xl md:text-4xl text-ink">The Audience</h2>
+      <p className="font-hand text-2xl text-sepia rotate-[-1.5deg] origin-left">only they get to hear the record</p>
 
       {/* search */}
       <div className="mt-6">
@@ -89,7 +89,7 @@ function FriendsInner() {
       {/* pending invites */}
       {(incoming.length > 0 || outgoing.length > 0) && (
         <section className="mt-8">
-          <h3 className="font-heading text-xl text-cream">Pending invites</h3>
+          <h3 className="font-heading text-2xl text-ink">Pending invites</h3>
           <div className="paper rounded-sm mt-2 divide-y divide-ink/10">
             {incoming.map((r) => {
               const from = db.users.find((u) => u.id === r.fromUserId);
@@ -136,10 +136,10 @@ function FriendsInner() {
 
       {/* current friends */}
       <section className="mt-8">
-        <h3 className="font-heading text-xl text-cream">The group</h3>
+        <h3 className="font-heading text-2xl text-ink">The group</h3>
         {friends.length === 0 ? (
           <div className="paper rounded-sm mt-2 p-6 text-center">
-            <p className="font-hand text-lg text-espresso/80">
+            <p className="font-hand text-xl text-sepia">
               No friends yet. The tea is going cold with no one to spill it to.
             </p>
           </div>

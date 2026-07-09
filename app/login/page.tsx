@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/db";
 import { Vinyl } from "@/components/Vinyl";
-import { MoodIcon } from "@/components/MoodIcon";
+import { Butterfly, MoonFace, Sprig, SunFace } from "@/components/Ornaments";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,23 +21,34 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* collage scatter around the card */}
+      <span className="absolute top-[8%] left-[12%] text-sepia/50 rotate-[-14deg] hidden sm:block" aria-hidden>
+        <Sprig className="w-14 h-24" />
+      </span>
+      <span className="absolute bottom-[10%] right-[10%] text-sepia/50 rotate-[10deg] hidden sm:block" aria-hidden>
+        <SunFace className="w-20 h-20" />
+      </span>
+      <span className="absolute top-[14%] right-[16%] text-sepia/45 rotate-[6deg] hidden sm:block" aria-hidden>
+        <MoonFace className="w-14 h-14" />
+      </span>
+
       <div className="paper relative rounded-sm w-full max-w-sm p-8" style={{ transform: "rotate(-0.6deg)" }}>
         <span className="tape -top-3 left-1/2 -translate-x-1/2 rotate-[2deg]" aria-hidden />
 
-        {/* decorations */}
-        <span className="absolute -bottom-4 -right-4 opacity-90" aria-hidden>
-          <Vinyl size={72} labelColor="#7d3b3f" />
+        {/* on-card decorations */}
+        <span className="absolute -bottom-5 -right-5" aria-hidden>
+          <Vinyl size={76} labelColor="#7d3b3f" />
         </span>
-        <span className="absolute top-3 left-3 text-espresso/40" aria-hidden>
-          <MoodIcon moodKey="moon" className="w-6 h-6" />
+        <span className="absolute top-4 left-4 text-sepia/70 rotate-[-8deg]" aria-hidden>
+          <Butterfly className="w-10 h-10" />
         </span>
-        <span className="absolute bottom-4 left-4 text-espresso/40" aria-hidden>
-          <MoodIcon moodKey="rose" className="w-6 h-6" />
+        <span className="absolute bottom-16 left-3 text-sepia/50 rotate-[16deg]" aria-hidden>
+          <Sprig className="w-7 h-12" />
         </span>
 
-        <h1 className="font-heading text-4xl text-ink text-center tracking-wide">Track Record</h1>
-        <p className="font-hand text-xl text-espresso/80 text-center mt-1">
+        <h1 className="font-title text-[2.6rem] leading-none text-ink text-center">Track Record</h1>
+        <p className="cutout text-[11px] rotate-[-1.5deg] mt-2 mx-auto block w-fit">
           you could write songs about this bs
         </p>
 
@@ -63,15 +74,15 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-ink-soft mt-5">
+        <p className="text-center text-[15px] text-ink-soft mt-5">
           New here?{" "}
           <Link href="/signup" className="underline hover:text-burgundy">
             Start your track record
           </Link>
         </p>
 
-        <p className="font-hand text-center text-espresso/60 mt-4 text-sm">
-          testing? try <span className="font-body not-italic">test / admin</span>
+        <p className="font-hand text-center text-sepia mt-4 text-lg rotate-[-1deg]">
+          testing? try <span className="font-type not-italic text-sm">test / admin</span>
         </p>
       </div>
     </div>

@@ -41,7 +41,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   if (!checked || !currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="font-hand text-2xl text-cream/60">flipping through the records…</p>
+        <p className="font-hand text-3xl text-sepia">flipping through the records…</p>
       </div>
     );
   }
@@ -53,39 +53,39 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <PlayerProvider>
       <div className="min-h-screen md:flex">
         {/* ---- desktop sidebar ---- */}
-        <aside className="hidden md:flex md:flex-col w-64 shrink-0 border-r border-cream/10 p-5 gap-6 sticky top-0 h-screen overflow-y-auto scroll-thin">
+        <aside className="hidden md:flex md:flex-col w-64 shrink-0 newsprint border-r-0 p-5 gap-6 sticky top-0 h-screen overflow-y-auto scroll-thin shadow-[3px_0_12px_rgba(46,32,21,0.12)]">
           <div>
             <Link href="/home">
-              <h1 className="font-heading text-3xl text-cream tracking-wide">Track Record</h1>
+              <h1 className="font-title text-[1.9rem] leading-tight text-ink">Track Record</h1>
             </Link>
-            <p className="font-hand text-gold/90 text-lg leading-tight mt-0.5">
+            <p className="cutout text-[11px] rotate-[-1.5deg] mt-1.5">
               you could write songs about this bs
             </p>
           </div>
 
-          <nav className="space-y-1">
+          <nav className="space-y-0.5">
             {NAV.map((item) => {
               const active = pathname?.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`block rounded-sm px-3 py-2 transition-colors ${
+                  className={`flex flex-wrap items-baseline gap-x-2 rounded-sm px-3 py-1.5 transition-colors ${
                     active
-                      ? "bg-cream/10 text-cream border-l-2 border-gold"
-                      : "text-cream/70 hover:text-cream hover:bg-cream/5"
+                      ? "bg-ink/10 text-ink"
+                      : "text-ink-soft hover:text-ink hover:bg-ink/5"
                   }`}
                 >
-                  <span className="font-heading tracking-wide">{item.label}</span>
-                  <span className="font-hand text-sm text-gold/70 ml-2">{item.hand}</span>
+                  <span className={`font-heading text-lg whitespace-nowrap ${active ? "italic" : ""}`}>{item.label}</span>
+                  <span className="font-hand text-base text-sepia whitespace-nowrap">{item.hand}</span>
                 </Link>
               );
             })}
           </nav>
 
           {/* user's own mini stack */}
-          <div className="mt-auto pt-4 border-t border-cream/10">
-            <p className="font-hand text-gold/80 text-lg mb-2">your spire</p>
+          <div className="mt-auto pt-4 border-t border-dashed ink-line">
+            <p className="font-hand text-xl text-sepia mb-2 rotate-[-2deg]">your spire ↓</p>
             <Spire
               owner={currentUser}
               posts={myPosts.slice(0, 4)}
@@ -99,18 +99,18 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* ---- mobile top bar ---- */}
-        <header className="md:hidden sticky top-0 z-30 bg-night/95 backdrop-blur border-b border-cream/10 px-4 py-2.5 flex items-baseline justify-between">
-          <Link href="/home" className="font-heading text-xl text-cream">
+        <header className="md:hidden sticky top-0 z-30 newsprint border-x-0 border-t-0 px-4 py-2 flex items-center justify-between gap-2">
+          <Link href="/home" className="font-title text-xl text-ink">
             Track Record
           </Link>
-          <span className="font-hand text-gold/80 text-sm">you could write songs about this bs</span>
+          <span className="cutout text-[9px] rotate-[-1deg]">you could write songs about this bs</span>
         </header>
 
         {/* ---- main ---- */}
         <main className="flex-1 min-w-0 pb-24 md:pb-8">{children}</main>
 
         {/* ---- mobile bottom nav ---- */}
-        <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-night/95 backdrop-blur border-t border-cream/10 flex justify-around py-2">
+        <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 newsprint border-x-0 border-b-0 shadow-[0_-3px_10px_rgba(46,32,21,0.12)] flex justify-around items-end py-2">
           {NAV.slice(0, 5).map((item) => {
             const active = pathname?.startsWith(item.href);
             const short = item.href === "/me" ? "Mine" : item.label.split(" ")[0];
@@ -120,21 +120,17 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={`flex flex-col items-center px-2 ${
-                  isNew
-                    ? "-mt-4"
-                    : active
-                      ? "text-gold"
-                      : "text-cream/60"
+                  isNew ? "-mt-4" : active ? "text-ink" : "text-ink-soft/80"
                 }`}
               >
                 {isNew ? (
-                  <span className="w-11 h-11 rounded-full btn-vintage flex items-center justify-center text-2xl font-heading border border-cream/20">
+                  <span className="w-11 h-11 rounded-full btn-vintage flex items-center justify-center text-2xl">
                     +
                   </span>
                 ) : (
                   <>
-                    <span className="font-heading text-sm">{short}</span>
-                    <span className={`block w-1 h-1 rounded-full mt-0.5 ${active ? "bg-gold" : "bg-transparent"}`} />
+                    <span className={`font-heading text-base ${active ? "italic" : ""}`}>{short}</span>
+                    <span className={`block w-1 h-1 rounded-full mt-0.5 ${active ? "bg-burgundy" : "bg-transparent"}`} />
                   </>
                 )}
               </Link>

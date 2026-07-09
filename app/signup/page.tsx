@@ -38,8 +38,8 @@ export default function SignupPage() {
         <span className="tape -top-3 left-10 rotate-[-4deg]" aria-hidden />
         <span className="tape -top-3 right-10 rotate-[3deg]" aria-hidden />
 
-        <h1 className="font-heading text-3xl text-ink text-center">Start the Record</h1>
-        <p className="font-hand text-lg text-espresso/80 text-center mt-1">
+        <h1 className="font-title text-4xl text-ink text-center">Start the Record</h1>
+        <p className="font-hand text-xl text-sepia text-center mt-1 rotate-[-1deg]">
           every era deserves liner notes
         </p>
 
@@ -74,7 +74,7 @@ export default function SignupPage() {
             className="vintage w-full rounded-sm px-3 py-2"
           />
           <label className="block text-sm text-ink-soft">
-            <span className="font-hand text-base text-espresso/80">profile picture (optional)</span>
+            <span className="font-hand text-lg text-sepia">profile picture (optional)</span>
             <input type="file" accept="image/*" onChange={onPickPicture} className="block mt-1 text-xs" />
           </label>
           <p className="text-xs text-ink-soft italic">

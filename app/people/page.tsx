@@ -26,8 +26,8 @@ function PeopleInner() {
     <div className="p-4 md:p-8 max-w-3xl mx-auto">
       <div className="flex items-baseline justify-between flex-wrap gap-3">
         <div>
-          <h2 className="font-heading text-2xl md:text-3xl text-cream">The Cast</h2>
-          <p className="font-hand text-gold/80 text-lg">everyone the songs are about</p>
+          <h2 className="font-title text-3xl md:text-4xl text-ink">The Cast</h2>
+          <p className="font-hand text-2xl text-sepia rotate-[-1.5deg] origin-left">everyone the songs are about</p>
         </div>
         <button onClick={() => setShowForm((s) => !s)} className="btn-vintage rounded-sm px-4 py-2">
           {showForm ? "never mind" : "+ Add someone to the lore"}
@@ -46,7 +46,7 @@ function PeopleInner() {
         {people.length === 0 && !showForm && (
           <div className="paper rounded-sm max-w-sm mx-auto mt-10 p-8 text-center" style={{ transform: "rotate(0.5deg)" }}>
             <p className="font-heading text-xl text-ink">Nobody in the cast yet.</p>
-            <p className="font-hand text-lg text-espresso/80 mt-2">
+            <p className="font-hand text-xl text-sepia mt-2">
               The stage is empty. Suspiciously peaceful.
             </p>
           </div>
@@ -59,7 +59,7 @@ function PeopleInner() {
               <div className="min-w-0 flex-1">
                 <p className="font-heading text-lg text-ink">
                   {p.name}
-                  {p.nickname && <span className="font-hand text-espresso/80 text-base ml-2">“{p.nickname}”</span>}
+                  {p.nickname && <span className="font-hand text-lg text-sepia ml-2">“{p.nickname}”</span>}
                   {!p.active && (
                     <span className="ml-2 text-[10px] uppercase tracking-widest text-moongrey border border-moongrey/50 rounded-sm px-1 py-px">
                       archived
@@ -157,13 +157,13 @@ function PersonForm({
         <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="where he lives (optional)" className="vintage rounded-sm px-3 py-2" />
         <input value={metWhere} onChange={(e) => setMetWhere(e.target.value)} placeholder="where you met — app, bar, fate…" className="vintage rounded-sm px-3 py-2" />
         <label className="vintage rounded-sm px-3 py-2 text-sm text-ink-soft flex items-center gap-2">
-          <span className="font-hand text-base shrink-0">first date:</span>
+          <span className="font-hand text-lg text-sepia shrink-0">first date:</span>
           <input type="date" value={firstDate} onChange={(e) => setFirstDate(e.target.value)} className="bg-transparent flex-1 outline-none" />
         </label>
       </div>
 
       {/* color theme */}
-      <p className="font-hand text-lg text-espresso/80 mt-4">their color in the record</p>
+      <p className="font-hand text-xl text-sepia mt-4">their color in the record</p>
       <div className="flex gap-2 mt-1 flex-wrap">
         {ACCENT_COLORS.map((c) => {
           const taken = usedColors.includes(c.key);
@@ -185,7 +185,7 @@ function PersonForm({
 
       {/* picture */}
       <label className="block mt-4 text-sm text-ink-soft">
-        <span className="font-hand text-lg text-espresso/80">picture (optional)</span>
+        <span className="font-hand text-xl text-sepia">picture (optional)</span>
         <input type="file" accept="image/*" onChange={(e) => setHasPhoto(Boolean(e.target.files?.length))} className="block mt-1 text-xs" />
       </label>
       <p className="text-xs text-ink-soft italic mt-2 border-l-2 pl-2 ink-line">

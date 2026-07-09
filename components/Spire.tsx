@@ -65,10 +65,28 @@ export function Spire({ owner, posts, people, hasNew, mini, onOpenPost, href, na
   const personFor = (post: Post): Person | undefined =>
     people.find((p) => p.id === post.personIds[0]);
 
-  const stripeFor = (post: Post): string => {
-    const cols = post.personIds.map((id) => accent(people.find((p) => p.id === id)?.color ?? "moon").hex);
-    if (cols.length >= 2) return `linear-gradient(to bottom, ${cols[0]} 50%, ${cols[1]} 50%)`;
-    return cols[0] ?? accent("moon").hex;
+  /** person-colored washi tape strips holding the scrap down */
+  const tapesFor = (post: Post, small = false) => {
+    const cols = post.personIds
+      .map((id) => people.find((p) => p.id === id))
+      .filter(Boolean)
+      .map((p) => accent(p!.color).hex);
+    const w = small ? "w-8" : "w-14";
+    if (cols.length >= 2) {
+      return (
+        <>
+          <span className={`tape ${w} -top-1.5 left-3 rotate-[-14deg]`} style={{ background: `${cols[0]}66` }} aria-hidden />
+          <span className={`tape ${w} -top-1.5 right-3 rotate-[12deg]`} style={{ background: `${cols[1]}66` }} aria-hidden />
+        </>
+      );
+    }
+    return (
+      <span
+        className={`tape ${w} -top-1.5 ${small ? "left-2 rotate-[-10deg]" : "left-1/2 -translate-x-1/2 rotate-[-3deg]"}`}
+        style={{ background: `${cols[0] ?? accent("moon").hex}66` }}
+        aria-hidden
+      />
+    );
   };
 
   const topIsPlaying = top && song === top.song && playing;
@@ -85,23 +103,18 @@ export function Spire({ owner, posts, people, hasNew, mini, onOpenPost, href, na
             className={`stack-card paper relative rounded-sm text-left w-full ${twoCol ? leanShift(leanFor(top, columnPeople)) : ""} ${mini ? "p-2.5" : "p-4"}`}
             style={{ transform: `rotate(${tilt(top.id)}deg)`, zIndex: 20 }}
           >
-            <span className="tape -top-2 left-1/2 -translate-x-1/2 rotate-[-3deg]" aria-hidden />
-            <span
-              className="absolute left-0 top-2 bottom-2 w-1 rounded-r"
-              style={{ background: stripeFor(top) }}
-              aria-hidden
-            />
-            <div className="flex items-start justify-between gap-2 pl-2">
+            {tapesFor(top)}
+            <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-hand text-espresso/80 text-sm leading-none">
+                <p className="font-type text-sepia text-[11px] leading-none tracking-wide">
                   {formatShortDate(postDate(top))}
                   {top.type === "standard_event" && (
-                    <span className="ml-2 uppercase tracking-widest text-[9px] font-body text-burgundy/80 border border-burgundy/40 rounded-sm px-1 py-px">
+                    <span className="ml-2 uppercase tracking-[0.14em] text-[9px] text-burgundy border border-burgundy/50 rounded-sm px-1 py-px">
                       {standardEvent(top.eventType ?? "")?.label ?? "event"}
                     </span>
                   )}
                 </p>
-                <h3 className={`font-heading text-ink mt-1 leading-snug ${mini ? "text-sm" : "text-lg"} line-clamp-2`}>
+                <h3 className={`font-heading text-ink mt-1 leading-snug ${mini ? "text-[15px]" : "text-xl"} line-clamp-2`}>
                   {top.title}
                 </h3>
               </div>
@@ -110,26 +123,26 @@ export function Spire({ owner, posts, people, hasNew, mini, onOpenPost, href, na
               </span>
             </div>
             {!mini && top.text && (
-              <p className="pl-2 mt-1 text-sm text-ink-soft line-clamp-2 italic">{top.text}</p>
+              <p className="mt-1 text-[15px] text-ink-soft line-clamp-2 italic">{top.text}</p>
             )}
-            <div className={`pl-2 mt-2 flex items-center gap-2 ${mini ? "" : "pt-2 border-t border-dashed ink-line"}`}>
+            <div className={`mt-2 flex items-center gap-2 ${mini ? "" : "pt-2 border-t border-dashed ink-line"}`}>
               <Vinyl size={mini ? 22 : 40} spinning={Boolean(topIsPlaying)} labelColor={accent(personFor(top)?.color ?? "gold").hex} />
-              <div className="min-w-0">
-                <p className={`text-ink truncate ${mini ? "text-[11px]" : "text-sm"} font-heading`}>{top.song.title}</p>
-                <p className={`text-ink-soft italic truncate ${mini ? "text-[10px]" : "text-xs"}`}>{top.song.artist}</p>
+              <div className="min-w-0 flex-1">
+                <p className={`text-ink truncate ${mini ? "text-[12px]" : "text-[15px]"} font-heading`}>{top.song.title}</p>
+                <p className={`text-ink-soft italic truncate ${mini ? "text-[11px]" : "text-sm"}`}>{top.song.artist}</p>
               </div>
-              {!mini && (
-                <span className="ml-auto font-hand text-espresso/70 text-sm whitespace-nowrap">
-                  {topIsPlaying ? "now spinning" : "hover to play"}
-                </span>
-              )}
             </div>
+            {!mini && (
+              <p className="font-hand text-sepia text-base leading-none text-right mt-1 rotate-[-1.5deg]">
+                {topIsPlaying ? "now spinning ♪" : "hover to play ♪"}
+              </p>
+            )}
           </button>
         ) : (
           <div className={`paper rounded-sm p-4 w-full text-center ${mini ? "p-2.5" : ""}`}>
-            <p className="font-hand text-espresso text-lg leading-tight">No updates yet.</p>
+            <p className="font-hand text-sepia text-xl leading-tight">No updates yet.</p>
             {!mini && (
-              <p className="text-xs text-ink-soft italic mt-1">
+              <p className="text-sm text-ink-soft italic mt-1">
                 Either peace has finally found them, or they&apos;re gatekeeping the lore.
               </p>
             )}
@@ -149,26 +162,22 @@ export function Spire({ owner, posts, people, hasNew, mini, onOpenPost, href, na
                 transform: `rotate(${tilt(post.id)}deg)`,
                 width: `${100 - shrink}%`,
                 zIndex: 19 - i,
-                boxShadow: "0 1px 2px rgba(43,33,24,0.2), 0 4px 10px rgba(43,33,24,0.18)",
+                boxShadow: "0 1px 2px rgba(46,32,21,0.16), 0 4px 10px rgba(46,32,21,0.14)",
               }}
             >
-              <span
-                className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r"
-                style={{ background: stripeFor(post) }}
-                aria-hidden
-              />
-              <div className="flex items-center gap-2 pl-1.5">
+              {tapesFor(post, true)}
+              <div className="flex items-center gap-2">
                 <span className="text-espresso shrink-0">
                   <MoodIcon moodKey={post.moodIcon} className={mini ? "w-3 h-3" : "w-3.5 h-3.5"} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className={`font-heading text-ink truncate leading-tight ${mini ? "text-[11px]" : "text-[13px]"}`}>
+                  <p className={`font-heading text-ink truncate leading-tight ${mini ? "text-[12px]" : "text-sm"}`}>
                     {post.title}
                   </p>
-                  <p className={`text-ink-soft ${mini ? "text-[9px]" : "text-[10px]"}`}>
+                  <p className={`text-ink-soft font-type ${mini ? "text-[8px]" : "text-[9px]"} tracking-wide`}>
                     {formatShortDate(postDate(post))}
                     <span className="mx-1" aria-hidden>·</span>
-                    <span className="italic">♪ {post.song.title}</span>
+                    <span>♪ {post.song.title}</span>
                   </p>
                 </div>
               </div>
@@ -211,20 +220,20 @@ function FooterBadge({
         <UserAvatar user={owner} size={mini ? 34 : 48} />
         {hasNew && (
           <span
-            className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-burgundy border-2 border-night"
+            className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-burgundy border-2 border-card"
             title="new lore"
           />
         )}
       </div>
-      <p className={`font-heading text-cream ${mini ? "text-xs" : "text-sm"} tracking-wide`}>
+      <p className={`font-heading text-ink ${mini ? "text-sm" : "text-base"}`}>
         {nameOverride ?? owner.displayName}
       </p>
       {columnPeople.length > 0 && (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           {columnPeople.map((p) => (
             <span key={p.id} className="flex items-center gap-1" title={p.name}>
               <PersonAvatar person={p} size={mini ? 14 : 18} />
-              {!mini && <span className="text-[10px] text-cream/70 italic">{p.name}</span>}
+              {!mini && <span className="text-xs text-ink-soft italic">{p.name}</span>}
             </span>
           ))}
         </div>

@@ -14,7 +14,7 @@ export default function Index() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <p className="font-hand text-2xl text-cream/60">dropping the needle…</p>
+      <p className="font-hand text-3xl text-sepia">dropping the needle…</p>
     </div>
   );
 }

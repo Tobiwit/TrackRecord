@@ -73,7 +73,7 @@ function EmptyNote({ title, note, action }: { title: string; note: string; actio
     <div className="p-8 flex justify-center">
       <div className="paper rounded-sm max-w-sm w-full p-8 text-center mt-12" style={{ transform: "rotate(-0.5deg)" }}>
         <p className="font-heading text-xl text-ink">{title}</p>
-        <p className="font-hand text-lg text-espresso/80 mt-2">{note}</p>
+        <p className="font-hand text-xl text-sepia mt-2">{note}</p>
         {action}
       </div>
     </div>

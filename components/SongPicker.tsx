@@ -36,7 +36,7 @@ export function SongPicker({
   if (selected) {
     const isPlaying = song === selected && playing;
     return (
-      <div className="paper-deep rounded-sm p-3 flex items-center gap-3 border border-gold/50">
+      <div className="paper-deep rounded-sm p-3 flex items-center gap-3 border-burgundy/40">
         {selected.albumArtUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={selected.albumArtUrl} alt="" className="w-12 h-12 rounded-sm object-cover border border-ink/20" />
@@ -44,7 +44,7 @@ export function SongPicker({
           <Vinyl size={48} spinning={isPlaying} />
         )}
         <div className="min-w-0 flex-1">
-          <p className="font-hand text-espresso/70 leading-none">track added ♪</p>
+          <p className="font-hand text-lg text-sepia leading-none">track added ♪</p>
           <p className="font-heading text-ink truncate">{selected.title}</p>
           <p className="text-sm text-ink-soft italic truncate">{selected.artist}</p>
         </div>
@@ -78,7 +78,7 @@ export function SongPicker({
         autoFocus
       />
       {!spotifyConfigured() && (
-        <p className="font-hand text-sm text-espresso/70 mt-1">
+        <p className="font-hand text-lg text-sepia mt-1 leading-tight">
           Spotify isn&apos;t connected — searching the house catalog instead.
         </p>
       )}

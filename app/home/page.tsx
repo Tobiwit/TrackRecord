@@ -37,8 +37,8 @@ function HomeInner() {
     <div className="p-4 md:p-8">
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
         <div>
-          <h2 className="font-heading text-2xl md:text-3xl text-cream">The Gallery</h2>
-          <p className="font-hand text-gold/80 text-lg">your friends are waiting for the tea</p>
+          <h2 className="font-title text-3xl md:text-4xl text-ink">The Gallery</h2>
+          <p className="font-hand text-xl md:text-2xl text-sepia rotate-[-1.5deg] origin-left">your friends are waiting for the tea</p>
         </div>
         <Link href="/new" className="hidden md:inline-block btn-vintage rounded-sm px-4 py-2">
           + New Update
@@ -48,7 +48,7 @@ function HomeInner() {
       {friends.length === 0 ? (
         <div className="paper rounded-sm max-w-md mx-auto mt-16 p-8 text-center" style={{ transform: "rotate(-0.5deg)" }}>
           <p className="font-heading text-xl text-ink">The gallery is empty.</p>
-          <p className="font-hand text-lg text-espresso/80 mt-2">
+          <p className="font-hand text-xl text-sepia mt-2">
             No friends on the record yet — the lore needs an audience.
           </p>
           <Link href="/friends" className="btn-vintage inline-block rounded-sm px-4 py-2 mt-4">

@@ -1,35 +1,44 @@
 @import "tailwindcss";
 
 @theme {
-  /* --- Track Record vintage palette --- */
-  --color-cream: #f0e6d2;
-  --color-paper: #e7dabe;
-  --color-paper-deep: #d9c9a6;
-  --color-ink: #2b2118;
-  --color-ink-soft: #4d4033;
+  /* --- Track Record: aged-paper collage palette --- */
+  --color-page: #e2d3b3; /* the desk the scrapbook sits on */
+  --color-card: #f4edda; /* a fresh paper scrap */
+  --color-card-deep: #eaddbf; /* an older scrap */
+  --color-ink: #2e2015; /* letterpress ink */
+  --color-ink-soft: #55412d; /* faded ink, still readable */
   --color-espresso: #5a4232;
-  --color-olive: #6b6b3f;
-  --color-sage: #7f8a6c;
-  --color-dustyrose: #b57f78;
+  --color-sepia: #6e5738; /* captions, hand notes */
+  --color-olive: #5f6135;
+  --color-sage: #6f7a5b;
+  --color-dustyrose: #a56a62;
   --color-burgundy: #7d3b3f;
   --color-burnt: #a95f33;
-  --color-gold: #a98a3e;
-  --color-moongrey: #7d7871;
-  --color-night: #1d1813;
-  --color-night-soft: #2a231b;
+  --color-gold: #8a6b28; /* antique gold, dark enough to read */
+  --color-moongrey: #6f6a62;
 
-  --shadow-card: 0 1px 2px rgba(43, 33, 24, 0.18), 0 6px 18px rgba(43, 33, 24, 0.22);
-  --shadow-lifted: 0 2px 4px rgba(43, 33, 24, 0.22), 0 14px 34px rgba(43, 33, 24, 0.32);
-
-  --animate-spin-slow: spin 5s linear infinite;
+  --shadow-scrap: 0 1px 2px rgba(46, 32, 21, 0.14), 0 5px 14px rgba(46, 32, 21, 0.16);
+  --shadow-lifted: 0 2px 4px rgba(46, 32, 21, 0.16), 0 12px 28px rgba(46, 32, 21, 0.24);
 }
 
 /* font vars reference next/font variables set on <body>, so they must be
    inlined into utilities rather than emitted at :root */
 @theme inline {
-  --font-heading: var(--font-playfair), "Playfair Display", Georgia, serif;
-  --font-body: var(--font-lora), "Lora", Georgia, serif;
-  --font-hand: var(--font-caveat), "Caveat", cursive;
+  --font-title: var(--font-fell-sc), "IM Fell English SC", Georgia, serif; /* wordmark, page titles */
+  --font-heading: var(--font-fell), "IM Fell English", Georgia, serif; /* card titles, buttons */
+  --font-body: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --font-type: var(--font-typewriter), "Special Elite", "Courier New", monospace; /* labels, dates, stamps */
+  --font-hand: var(--font-aurore), "La Belle Aurore", cursive; /* pencil margin notes */
+}
+
+/* ---------- textures (inline SVG data URIs) ---------- */
+
+:root {
+  /* fine paper grain */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+
+  /* ghost of old newsprint: faded rules + column of illegible type */
+  --newsprint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='360' font-family='Georgia,serif' fill='%232e2015'%3E%3Cg opacity='0.12'%3E%3Ctext x='8' y='22' font-size='15' font-weight='bold'%3EADVERTISEMENTS ON THIS PAGE%3C/text%3E%3Cline x1='6' y1='30' x2='250' y2='30' stroke='%232e2015' stroke-width='1'/%3E%3Ctext x='8' y='46' font-size='8'%3EMust be contracted for with the Printer%3C/text%3E%3Ctext x='8' y='58' font-size='8'%3Eand the Parlor. Only one dollar the year,%3C/text%3E%3Ctext x='8' y='70' font-size='8'%3Epostage paid, to any address in the county.%3C/text%3E%3Ctext x='8' y='82' font-size='8'%3EEVERY MAN HIS OWN PRINTER.%3C/text%3E%3Cline x1='6' y1='92' x2='250' y2='92' stroke='%232e2015' stroke-width='0.6'/%3E%3Ctext x='8' y='108' font-size='8'%3EOf all our presses, and the material%3C/text%3E%3Ctext x='8' y='120' font-size='8'%3Eaccompanying them, we speak with candor.%3C/text%3E%3Ctext x='270' y='22' font-size='11' font-style='italic'%3EON TOUR%3C/text%3E%3Cline x1='268' y1='30' x2='414' y2='30' stroke='%232e2015' stroke-width='0.8'/%3E%3Ctext x='270' y='46' font-size='8'%3Ethe Conservatory,%3C/text%3E%3Ctext x='270' y='58' font-size='8'%3Ethe Kitchen and the Parlor.%3C/text%3E%3Ctext x='270' y='70' font-size='8'%3ELands, and the Nursery.%3C/text%3E%3Ctext x='8' y='160' font-size='15' font-weight='bold'%3EHE HEARD IT FROM A FRIEND%3C/text%3E%3Cline x1='6' y1='170' x2='414' y2='170' stroke='%232e2015' stroke-width='1'/%3E%3Ctext x='8' y='186' font-size='8'%3EThis monthly also abounds in county notices,%3C/text%3E%3Ctext x='8' y='198' font-size='8'%3Eperfect satisfaction guaranteed to all readers%3C/text%3E%3Ctext x='8' y='210' font-size='8'%3Ein every county in the United States.%3C/text%3E%3Ctext x='220' y='186' font-size='8'%3EMILLER, WOOD %26 CO.%3C/text%3E%3Ctext x='220' y='198' font-size='8'%3EGARDNERS' Baltimore, Md.%3C/text%3E%3Ctext x='8' y='250' font-size='11' font-style='italic'%3EI WANT to be with you everywhere%3C/text%3E%3Cline x1='6' y1='260' x2='250' y2='260' stroke='%232e2015' stroke-width='0.6'/%3E%3Ctext x='8' y='276' font-size='8'%3EFor when you are lonely, drop the needle%3C/text%3E%3Ctext x='8' y='288' font-size='8'%3Eand it will save your soul. Much love.%3C/text%3E%3Ctext x='8' y='330' font-size='15' font-weight='bold'%3EEXHIBITION STADIUM · JULY%3C/text%3E%3Cline x1='6' y1='340' x2='414' y2='340' stroke='%232e2015' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* ---------- base ---------- */
@@ -40,43 +49,66 @@ body {
 }
 
 body {
-  background-color: var(--color-night);
+  background-color: var(--color-page);
   color: var(--color-ink);
-  font-family: var(--font-lora), "Lora", Georgia, serif;
-  /* faint woodgrain-ish vertical wash over the dark backdrop */
+  font-family: var(--font-garamond), "EB Garamond", Georgia, serif;
+  font-size: 1.0625rem;
+  /* aged desk: foxing stains + newsprint ghost + grain */
   background-image:
-    radial-gradient(1200px 700px at 20% -10%, rgba(169, 138, 62, 0.08), transparent 60%),
-    radial-gradient(900px 600px at 90% 110%, rgba(125, 59, 63, 0.1), transparent 60%),
+    radial-gradient(520px 380px at 12% 6%, rgba(138, 107, 40, 0.1), transparent 65%),
+    radial-gradient(640px 420px at 88% 20%, rgba(125, 59, 63, 0.07), transparent 60%),
+    radial-gradient(700px 520px at 50% 105%, rgba(90, 66, 50, 0.12), transparent 62%),
+    radial-gradient(180px 140px at 78% 72%, rgba(138, 107, 40, 0.08), transparent 70%),
+    var(--newsprint),
     var(--grain);
 }
 
 ::selection {
-  background: rgba(169, 138, 62, 0.4);
+  background: rgba(125, 59, 63, 0.25);
 }
 
-/* ---------- paper & texture ---------- */
-
-:root {
-  /* SVG turbulence noise, tiled — the paper grain everything sits on */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+h1,
+h2,
+h3 {
+  text-wrap: balance;
 }
 
+/* ---------- paper scraps ---------- */
+/* component classes live in the components layer so Tailwind utilities
+   (w-*, bg-*, rotate-*) can override their defaults */
+
+@layer components {
 .paper {
-  background-color: var(--color-cream);
-  background-image: var(--grain);
-  box-shadow: var(--shadow-card);
+  background-color: var(--color-card);
+  background-image:
+    radial-gradient(140% 100% at 50% 0%, rgba(255, 252, 240, 0.5), transparent 55%),
+    radial-gradient(60px 40px at 92% 88%, rgba(138, 107, 40, 0.07), transparent 70%),
+    radial-gradient(40px 30px at 6% 94%, rgba(90, 66, 50, 0.06), transparent 70%),
+    var(--grain);
+  border: 1px solid rgba(46, 32, 21, 0.16);
+  box-shadow: var(--shadow-scrap);
 }
 
 .paper-deep {
-  background-color: var(--color-paper);
-  background-image: var(--grain);
+  background-color: var(--color-card-deep);
+  background-image:
+    radial-gradient(50px 36px at 90% 10%, rgba(138, 107, 40, 0.08), transparent 70%),
+    var(--grain);
+  border: 1px solid rgba(46, 32, 21, 0.14);
+}
+
+/* newsprint clipping — for panels that should read as cut from a paper */
+.newsprint {
+  background-color: #efe6cd;
+  background-image: var(--newsprint), var(--grain);
+  border: 1px solid rgba(46, 32, 21, 0.18);
 }
 
 .ink-line {
-  border-color: rgba(43, 33, 24, 0.25);
+  border-color: rgba(46, 32, 21, 0.28);
 }
 
-/* torn-paper bottom edge via clip-path zigzag */
+/* deckled (torn) bottom edge */
 .torn-bottom {
   clip-path: polygon(
     0 0, 100% 0, 100% calc(100% - 6px),
@@ -87,25 +119,37 @@ body {
   );
 }
 
-/* a strip of "tape" — rotate + position with utilities where used */
+/* a strip of yellowed tape */
 .tape {
   position: absolute;
   width: 5.5rem;
-  height: 1.6rem;
-  background: rgba(233, 222, 194, 0.65);
-  border-left: 1px dashed rgba(43, 33, 24, 0.15);
-  border-right: 1px dashed rgba(43, 33, 24, 0.15);
-  box-shadow: 0 1px 3px rgba(43, 33, 24, 0.18);
-  backdrop-filter: saturate(0.8);
+  height: 1.5rem;
+  background: rgba(226, 210, 169, 0.75);
+  border-left: 1px dashed rgba(46, 32, 21, 0.18);
+  border-right: 1px dashed rgba(46, 32, 21, 0.18);
+  box-shadow: 0 1px 3px rgba(46, 32, 21, 0.2);
+  pointer-events: none;
 }
 
-/* font-heading / font-hand utilities are generated by Tailwind from @theme inline */
+/* typewriter cut-out strip, like a caption snipped from another page */
+.cutout {
+  display: inline-block;
+  font-family: var(--font-typewriter), "Special Elite", "Courier New", monospace;
+  background: #f7f1df;
+  background-image: var(--grain);
+  border: 1px solid rgba(46, 32, 21, 0.2);
+  box-shadow: 1px 2px 4px rgba(46, 32, 21, 0.18);
+  padding: 0.1rem 0.6rem 0.2rem;
+  color: var(--color-ink);
+}
+}
 
-/* ---------- scrollbars (subtle, vintage) ---------- */
+/* ---------- scrollbars ---------- */
 
+@layer components {
 .scroll-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgba(169, 138, 62, 0.5) transparent;
+  scrollbar-color: rgba(90, 66, 50, 0.45) transparent;
 }
 
 .scroll-thin::-webkit-scrollbar {
@@ -114,16 +158,16 @@ body {
 }
 
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: rgba(169, 138, 62, 0.5);
+  background: rgba(90, 66, 50, 0.45);
   border-radius: 4px;
 }
 
-/* hide scrollbar entirely (mobile swipe rails) */
 .scroll-hide {
   scrollbar-width: none;
 }
 .scroll-hide::-webkit-scrollbar {
   display: none;
+}
 }
 
 /* ---------- vinyl ---------- */
@@ -137,10 +181,16 @@ body {
   animation: vinyl-spin 4.5s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .vinyl-spinning {
+    animation: none;
+  }
+}
+
 /* ---------- card stack hover ---------- */
 
 .stack-card {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
 }
 
 .stack-card:hover {
@@ -149,45 +199,61 @@ body {
   z-index: 30;
 }
 
-/* ---------- misc ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .stack-card {
+    transition: none;
+  }
+}
 
+/* ---------- buttons & inputs ---------- */
+
+@layer components {
 .btn-vintage {
-  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
-  letter-spacing: 0.06em;
-  background: var(--color-espresso);
-  color: var(--color-cream);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  transition: transform 0.15s ease, background 0.15s ease;
+  font-family: var(--font-fell-sc), "IM Fell English SC", Georgia, serif;
+  letter-spacing: 0.04em;
+  background: var(--color-ink);
+  color: var(--color-card);
+  border: 1px solid rgba(46, 32, 21, 0.9);
+  box-shadow: 2px 3px 0 rgba(46, 32, 21, 0.25);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-vintage:hover {
   background: var(--color-burgundy);
-  transform: translateY(-1px);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 4px 0 rgba(46, 32, 21, 0.25);
 }
 
 .btn-vintage:active {
-  transform: translateY(0);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 rgba(46, 32, 21, 0.25);
+}
+
+.btn-vintage:focus-visible {
+  outline: 2px solid var(--color-burgundy);
+  outline-offset: 2px;
 }
 
 input.vintage,
 textarea.vintage,
 select.vintage {
-  background: rgba(255, 251, 240, 0.6);
-  border: 1px solid rgba(43, 33, 24, 0.3);
+  background: rgba(255, 252, 242, 0.75);
+  border: 1px solid rgba(46, 32, 21, 0.4);
   color: var(--color-ink);
-  font-family: var(--font-body);
+  font-family: var(--font-garamond), "EB Garamond", Georgia, serif;
 }
 
 input.vintage:focus,
 textarea.vintage:focus,
 select.vintage:focus {
   outline: none;
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 3px rgba(169, 138, 62, 0.2);
+  border-color: var(--color-burgundy);
+  box-shadow: 0 0 0 3px rgba(125, 59, 63, 0.18);
 }
 
 input.vintage::placeholder,
 textarea.vintage::placeholder {
-  color: rgba(77, 64, 51, 0.55);
+  color: rgba(85, 65, 45, 0.75);
   font-style: italic;
+}
 }

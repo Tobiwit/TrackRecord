@@ -33,8 +33,8 @@ function SettingsInner() {
 
   return (
     <div className="p-4 md:p-8 max-w-xl mx-auto">
-      <h2 className="font-heading text-2xl md:text-3xl text-cream">Backstage</h2>
-      <p className="font-hand text-gold/80 text-lg">profile, wiring, and the exit door</p>
+      <h2 className="font-title text-3xl md:text-4xl text-ink">Backstage</h2>
+      <p className="font-hand text-2xl text-sepia rotate-[-1.5deg] origin-left">profile, wiring, and the exit door</p>
 
       {/* profile */}
       <section className="paper rounded-sm p-5 mt-6 relative" style={{ transform: "rotate(-0.3deg)" }}>
@@ -52,7 +52,7 @@ function SettingsInner() {
           </div>
         </div>
         <label className="block mt-3 text-sm text-ink-soft">
-          <span className="font-hand text-base text-espresso/80">change picture</span>
+          <span className="font-hand text-lg text-sepia">change picture</span>
           <input type="file" accept="image/*" onChange={onPickPicture} className="block mt-1 text-xs" />
         </label>
         <button

@@ -43,7 +43,7 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-night/80 backdrop-blur-sm flex items-start md:items-center justify-center p-3 md:p-8 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-ink/50 flex items-start md:items-center justify-center p-3 md:p-8 overflow-y-auto"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -69,17 +69,17 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
           {/* header */}
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="font-hand text-lg text-espresso/80 leading-none">{formatDate(postDate(post))}</p>
+              <p className="font-type text-xs text-sepia tracking-wide leading-none">{formatDate(postDate(post))}</p>
               {event && (
-                <span className="inline-block mt-1 uppercase tracking-[0.2em] text-[10px] text-burgundy border border-burgundy/50 rounded-sm px-1.5 py-0.5">
+                <span className="inline-block mt-1 font-type uppercase tracking-[0.16em] text-[10px] text-burgundy border border-burgundy/50 rounded-sm px-1.5 py-0.5">
                   {event.label}
                 </span>
               )}
-              <h2 className="font-heading text-2xl md:text-3xl text-ink mt-1 leading-tight">{post.title}</h2>
+              <h2 className="font-title text-3xl md:text-4xl text-ink mt-1 leading-tight">{post.title}</h2>
             </div>
             <div className="flex flex-col items-center gap-1 shrink-0 text-espresso">
               <MoodIcon moodKey={post.moodIcon} className="w-7 h-7" />
-              <span className="font-hand text-sm text-espresso/80">{mood(post.moodIcon).label}</span>
+              <span className="font-hand text-lg text-sepia leading-none">{mood(post.moodIcon).label}</span>
             </div>
           </div>
 
@@ -119,7 +119,7 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
               <Vinyl size={56} spinning={isPlaying} labelColor={accent(people[0]?.color ?? "gold").hex} />
             )}
             <div className="min-w-0 flex-1">
-              <p className="font-hand text-espresso/70 text-sm leading-none">the soundtrack</p>
+              <p className="font-hand text-lg text-sepia leading-none">the soundtrack</p>
               <p className="font-heading text-ink truncate">{post.song.title}</p>
               <p className="text-sm text-ink-soft italic truncate">
                 {post.song.artist}
@@ -148,7 +148,7 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
 
           {/* reactions */}
           <div className="mt-5">
-            <p className="font-hand text-lg text-espresso/80">the jury reacts</p>
+            <p className="font-hand text-2xl text-sepia rotate-[-1deg] origin-left">the jury reacts</p>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {REACTION_TYPES.map((rt) => {
                 const count = reactionCounts.get(rt.key) ?? 0;
@@ -159,7 +159,7 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
                     onClick={() => currentUser && toggleReaction(post.id, currentUser.id, rt.key)}
                     className={`text-xs rounded-full border px-2.5 py-1 transition-colors ${
                       mine
-                        ? "bg-burgundy text-cream border-burgundy"
+                        ? "bg-burgundy text-card border-burgundy"
                         : count > 0
                           ? "border-espresso/50 text-espresso bg-espresso/10"
                           : "border-ink/25 text-ink-soft hover:border-espresso hover:text-espresso"
@@ -174,7 +174,7 @@ export function EntryModal({ post, onClose }: { post: Post; onClose: () => void 
 
           {/* comments */}
           <div className="mt-5 border-t border-dashed ink-line pt-3">
-            <p className="font-hand text-lg text-espresso/80">margin notes</p>
+            <p className="font-hand text-2xl text-sepia rotate-[-1deg] origin-left">margin notes</p>
             <div className="mt-2 space-y-2">
               {comments.length === 0 && (
                 <p className="text-sm text-ink-soft italic">No comments yet. The group chat is unusually quiet.</p>

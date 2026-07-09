@@ -47,7 +47,7 @@ function NewPostInner() {
       <div className="p-8 flex justify-center">
         <div className="paper rounded-sm max-w-sm w-full p-8 text-center mt-12" style={{ transform: "rotate(-0.5deg)" }}>
           <p className="font-heading text-xl text-ink">Who would this even be about?</p>
-          <p className="font-hand text-lg text-espresso/80 mt-2">
+          <p className="font-hand text-xl text-sepia mt-2">
             The lore needs a cast before it gets a plot.
           </p>
           <Link href="/people" className="btn-vintage inline-block rounded-sm px-4 py-2 mt-4">
@@ -90,8 +90,8 @@ function NewPostInner() {
 
   return (
     <div className="p-4 md:p-8 max-w-xl mx-auto">
-      <h2 className="font-heading text-2xl md:text-3xl text-cream">New Track</h2>
-      <p className="font-hand text-gold/80 text-lg">this one deserves a bridge</p>
+      <h2 className="font-title text-3xl md:text-4xl text-ink">New Track</h2>
+      <p className="font-hand text-2xl text-sepia rotate-[-1.5deg] origin-left">this one deserves a bridge</p>
 
       {/* step dots */}
       <div className="flex items-center gap-1.5 mt-4">
@@ -100,13 +100,13 @@ function NewPostInner() {
             key={label}
             onClick={() => i < step && setStep(i)}
             className={`h-2 rounded-full transition-all ${
-              i === step ? "w-8 bg-gold" : i < step ? "w-4 bg-gold/50" : "w-4 bg-cream/15"
+              i === step ? "w-8 bg-burgundy" : i < step ? "w-4 bg-burgundy/50" : "w-4 bg-ink/15"
             }`}
             aria-label={`step ${i + 1}: ${label}`}
             disabled={i > step}
           />
         ))}
-        <span className="font-hand text-gold/70 text-base ml-2">{STEPS[step]}</span>
+        <span className="font-hand text-sepia text-xl ml-2 rotate-[-2deg]">{STEPS[step]}</span>
       </div>
 
       <div className="paper rounded-sm p-5 md:p-6 mt-4 relative" style={{ transform: "rotate(0.3deg)" }}>
@@ -135,7 +135,7 @@ function NewPostInner() {
                     <PersonAvatar person={p} size={36} />
                     <span className="min-w-0">
                       <span className="font-heading text-ink block truncate">{p.name}</span>
-                      {p.nickname && <span className="font-hand text-espresso/70 text-sm block truncate">“{p.nickname}”</span>}
+                      {p.nickname && <span className="font-hand text-base text-sepia block truncate">“{p.nickname}”</span>}
                     </span>
                   </button>
                 );
@@ -184,7 +184,7 @@ function NewPostInner() {
                       setEventType(e.key);
                       setMoodIcon(e.moodIcon);
                     }}
-                    className={`flex items-center gap-1.5 rounded-sm border-2 border-dashed px-2.5 py-1.5 text-sm uppercase tracking-wider transition-transform hover:-rotate-1 ${
+                    className={`flex items-center gap-1.5 rounded-sm border-2 border-dashed px-2.5 py-1.5 font-type uppercase tracking-wider transition-transform hover:-rotate-1 ${
                       eventType === e.key
                         ? "border-burgundy text-burgundy bg-burgundy/10 -rotate-1"
                         : "border-ink/30 text-ink-soft"
@@ -204,7 +204,7 @@ function NewPostInner() {
         {step === 2 && (
           <div>
             <h3 className="font-heading text-xl text-ink">Pick the soundtrack</h3>
-            <p className="font-hand text-espresso/80 mt-0.5">no song, no lore</p>
+            <p className="font-hand text-xl text-sepia mt-0.5 rotate-[-1deg] origin-left">no song, no lore</p>
             <div className="mt-3">
               <SongPicker selected={song} onSelect={setSong} />
             </div>
@@ -233,7 +233,7 @@ function NewPostInner() {
               className="vintage w-full rounded-sm px-3 py-2 mt-3"
             />
             <label className="flex items-center gap-2 mt-3 text-sm text-ink-soft">
-              <span className="font-hand text-base text-espresso/80">when did this happen?</span>
+              <span className="font-hand text-lg text-sepia">when did this happen?</span>
               <input
                 type="date"
                 value={dateOverride}
@@ -261,7 +261,7 @@ function NewPostInner() {
                   <span className="text-espresso">
                     <MoodIcon moodKey={m.key} className="w-6 h-6" />
                   </span>
-                  <span className="font-hand text-espresso/90 text-sm">{m.label}</span>
+                  <span className="font-hand text-base text-sepia leading-none">{m.label}</span>
                 </button>
               ))}
             </div>
@@ -273,7 +273,7 @@ function NewPostInner() {
           <div>
             <h3 className="font-heading text-xl text-ink">Read it back</h3>
             <div className="paper-deep rounded-sm p-4 mt-3 border border-ink/15">
-              <p className="font-hand text-espresso/80 text-sm">
+              <p className="font-hand text-lg text-sepia leading-none">
                 about {personIds.map((id) => people.find((p) => p.id === id)?.name).filter(Boolean).join(" & ")}
               </p>
               <p className="font-heading text-lg text-ink mt-1">
@@ -289,7 +289,7 @@ function NewPostInner() {
                 ♪ {song?.title} — <span className="italic">{song?.artist}</span>
               </p>
             </div>
-            <p className="font-hand text-espresso/80 text-lg mt-3 text-center">
+            <p className="font-hand text-2xl text-sepia mt-3 text-center rotate-[-1deg]">
               your friends are waiting for the tea
             </p>
           </div>
@@ -319,7 +319,7 @@ function NewPostInner() {
 
       {/* accent hint for chosen people */}
       {personIds.length > 0 && (
-        <p className="text-xs text-cream/50 mt-3 text-center">
+        <p className="font-type text-[11px] text-sepia mt-3 text-center tracking-wide">
           {personIds
             .map((id) => {
               const p = people.find((x) => x.id === id);

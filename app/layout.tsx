@@ -1,20 +1,35 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Lora, Caveat } from "next/font/google";
+import { IM_Fell_English, IM_Fell_English_SC, EB_Garamond, Special_Elite, La_Belle_Aurore } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const fell = IM_Fell_English({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-fell",
 });
 
-const lora = Lora({
+const fellSC = IM_Fell_English_SC({
   subsets: ["latin"],
-  variable: "--font-lora",
+  weight: "400",
+  variable: "--font-fell-sc",
 });
 
-const caveat = Caveat({
+const garamond = EB_Garamond({
   subsets: ["latin"],
-  variable: "--font-caveat",
+  variable: "--font-garamond",
+});
+
+const typewriter = Special_Elite({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-typewriter",
+});
+
+const aurore = La_Belle_Aurore({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-aurore",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1d1813",
+  themeColor: "#e6d9bc",
 };
 
 export default function RootLayout({
@@ -31,7 +46,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${playfair.variable} ${lora.variable} ${caveat.variable} antialiased`}>
+      <body
+        className={`${fell.variable} ${fellSC.variable} ${garamond.variable} ${typewriter.variable} ${aurore.variable} antialiased`}
+      >
         {children}
       </body>
     </html>
