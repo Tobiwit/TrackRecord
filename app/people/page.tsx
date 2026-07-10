@@ -85,29 +85,43 @@ function PeopleInner() {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1 shrink-0 text-xs">
-                {!p.active && count > 0 && (
-                  <Link href={`/era/${p.id}`} className="underline text-espresso hover:text-burgundy">
-                    view the record ♪
-                  </Link>
+                {p.active ? (
+                  <button
+                    onClick={() => updatePerson(p.id, { active: false })}
+                    className="underline text-ink-soft hover:text-espresso"
+                  >
+                    archive era
+                  </button>
+                ) : (
+                  <>
+                    {p.eraTitle ? (
+                      <Link href={`/era/${p.id}`} className="underline text-espresso hover:text-burgundy">
+                        view the record ♪
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          const title = window.prompt(
+                            "Name this era before it goes on the shelf:",
+                            `The ${p.name} Era`
+                          );
+                          if (title === null) return;
+                          updatePerson(p.id, { eraTitle: title.trim() || `The ${p.name} Era` });
+                          router.push(`/era/${p.id}`);
+                        }}
+                        className="underline text-espresso hover:text-burgundy"
+                      >
+                        press the record ♪
+                      </button>
+                    )}
+                    <button
+                      onClick={() => updatePerson(p.id, { active: true })}
+                      className="underline text-ink-soft hover:text-espresso"
+                    >
+                      revive era
+                    </button>
+                  </>
                 )}
-                <button
-                  onClick={() => {
-                    if (p.active) {
-                      const title = window.prompt(
-                        "Name this era before it goes on the shelf:",
-                        p.eraTitle ?? `The ${p.name} Era`
-                      );
-                      if (title === null) return;
-                      updatePerson(p.id, { active: false, eraTitle: title.trim() || undefined });
-                      router.push(`/era/${p.id}`);
-                    } else {
-                      updatePerson(p.id, { active: true });
-                    }
-                  }}
-                  className="underline text-ink-soft hover:text-espresso"
-                >
-                  {p.active ? "press the record" : "revive era"}
-                </button>
                 <button
                   onClick={() => {
                     if (window.confirm(`Remove ${p.name} and their solo entries from the record?`)) {

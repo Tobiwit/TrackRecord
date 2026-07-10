@@ -63,6 +63,34 @@ function EraInner({ personId }: { personId: string }) {
     );
   }
 
+  if (!person.eraTitle) {
+    const isOwner = owner.id === currentUser.id;
+    return (
+      <Note
+        title="Archived, but not pressed."
+        note={
+          isOwner
+            ? "The era is on the shelf — give it a name and press it into a record."
+            : "This era sits unpressed on the shelf. The lore keeper hasn't named it yet."
+        }
+        action={
+          isOwner ? (
+            <button
+              onClick={() => {
+                const title = window.prompt("Name this era:", `The ${person.name} Era`);
+                if (title === null) return;
+                updatePerson(person.id, { eraTitle: title.trim() || `The ${person.name} Era` });
+              }}
+              className="btn-vintage inline-block rounded-sm px-4 py-2 mt-4"
+            >
+              ♪ Press the record
+            </button>
+          ) : undefined
+        }
+      />
+    );
+  }
+
   const posts = db.posts
     .filter((po) => po.ownerUserId === owner.id && po.personIds.includes(person.id))
     .sort((a, b) => postDate(a) - postDate(b));

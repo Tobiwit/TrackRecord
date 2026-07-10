@@ -108,11 +108,19 @@ async function refetchRemote() {
 /** In-place fixups for local databases seeded by older versions of the app. */
 function migrateLocal() {
   if (!db) return;
+  let dirty = false;
   const juneTop = db.posts.find((p) => p.id === "po_j6");
   if (juneTop && !juneTop.song.spotifyId) {
     juneTop.song = SILVER_SPRINGS;
-    persistLocal();
+    dirty = true;
   }
+  // Julian's era predates pressing — give the seeded record its title
+  const julian = db.people.find((p) => p.id === "p_julian");
+  if (julian && !julian.active && !julian.eraTitle) {
+    julian.eraTitle = "A Vibe (Deluxe Edition)";
+    dirty = true;
+  }
+  if (dirty) persistLocal();
 }
 
 function persistLocal() {

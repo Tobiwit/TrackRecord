@@ -67,7 +67,7 @@ function NewPostInner() {
     if (step === 1 && !postType) return setError("Diary page or stamp — choose one.");
     if (step === 1 && postType === "standard_event" && !eventType) return setError("Pick the event.");
     if (step === 2 && !song) return setError("No song, no lore.");
-    if (step === 3 && postType === "update" && !title.trim()) return setError("Give it a headline.");
+    if (step === 3 && !title.trim()) return setError("Give it a headline.");
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   }
 
@@ -79,7 +79,7 @@ function NewPostInner() {
       personIds,
       type: postType,
       eventType: postType === "standard_event" ? (eventType ?? undefined) : undefined,
-      title: postType === "standard_event" ? (chosenEvent?.label ?? "Event") : title.trim(),
+      title: title.trim(),
       text: text.trim() || undefined,
       moodIcon,
       song,
@@ -217,14 +217,21 @@ function NewPostInner() {
             <h3 className="font-heading text-xl text-ink">
               {postType === "standard_event" ? chosenEvent?.label : "The words"}
             </h3>
-            {postType === "update" && (
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="headline — e.g. 'He resurfaced.'"
-                className="vintage w-full rounded-sm px-3 py-2 mt-3"
-              />
+            {postType === "standard_event" && (
+              <p className="text-sm text-ink-soft italic mt-0.5">
+                The stamp says what happened — the headline says how it went down.
+              </p>
             )}
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={
+                postType === "standard_event"
+                  ? "headline — e.g. 'On a Tuesday. In the rain.'"
+                  : "headline — e.g. 'He resurfaced.'"
+              }
+              className="vintage w-full rounded-sm px-3 py-2 mt-3"
+            />
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -276,9 +283,12 @@ function NewPostInner() {
               <p className="font-hand text-lg text-sepia leading-none">
                 about {personIds.map((id) => people.find((p) => p.id === id)?.name).filter(Boolean).join(" & ")}
               </p>
-              <p className="font-heading text-lg text-ink mt-1">
-                {postType === "standard_event" ? chosenEvent?.label : title}
-              </p>
+              {postType === "standard_event" && chosenEvent && (
+                <span className="inline-block mt-1 font-type uppercase tracking-[0.14em] text-[9px] text-burgundy border border-burgundy/50 rounded-sm px-1 py-px">
+                  {chosenEvent.label}
+                </span>
+              )}
+              <p className="font-heading text-lg text-ink mt-1">{title}</p>
               {text && <p className="text-sm text-ink-soft italic mt-1 line-clamp-3">{text}</p>}
               <p className="text-sm text-ink mt-2 flex items-center gap-1.5">
                 {moodIcon && (

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- aged paper card -->
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="#f4edda"/>
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="none" stroke="#2e2015" stroke-opacity="0.35" stroke-width="2"/>
+  <!-- vinyl -->
+  <circle cx="32" cy="32" r="22" fill="#2e2015"/>
+  <circle cx="32" cy="32" r="17.5" fill="none" stroke="#f4edda" stroke-opacity="0.18" stroke-width="1.2"/>
+  <circle cx="32" cy="32" r="13.5" fill="none" stroke="#f4edda" stroke-opacity="0.14" stroke-width="1.2"/>
+  <!-- glint -->
+  <path d="M17 22a18 18 0 0 1 9-7" fill="none" stroke="#f4edda" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <!-- label -->
+  <circle cx="32" cy="32" r="8" fill="#7d3b3f"/>
+  <circle cx="32" cy="32" r="8" fill="none" stroke="#2e2015" stroke-opacity="0.4" stroke-width="1"/>
+  <circle cx="32" cy="32" r="1.6" fill="#2e2015"/>
+</svg>

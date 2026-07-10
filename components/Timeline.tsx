@@ -44,8 +44,9 @@ export function Timeline({
   const { play, stop, song, playing } = usePlayer();
 
   const activePeople = people.filter((p) => p.active);
-  const archivedWithPosts = people.filter(
-    (p) => !p.active && posts.some((po) => po.personIds.includes(p.id))
+  // only pressed records (named eras) make it onto the shelf
+  const pressedRecords = people.filter(
+    (p) => !p.active && p.eraTitle && posts.some((po) => po.personIds.includes(p.id))
   );
 
   // columns: active people who actually appear in entries, max four
@@ -96,20 +97,18 @@ export function Timeline({
         {headerExtra}
       </div>
 
-      {/* pressed records (archived eras) */}
-      {archivedWithPosts.length > 0 && (
+      {/* pressed records (named archived eras) */}
+      {pressedRecords.length > 0 && (
         <div className="mt-4 flex items-center gap-2 flex-wrap">
           <span className="font-hand text-lg text-sepia rotate-[-1deg]">from the shelf:</span>
-          {archivedWithPosts.map((p) => (
+          {pressedRecords.map((p) => (
             <Link
               key={p.id}
               href={`/era/${p.id}`}
               className="flex items-center gap-1.5 paper-deep border border-ink/20 rounded-sm px-2 py-1 hover:border-ink/50 transition-colors"
             >
               <PersonAvatar person={p} size={20} />
-              <span className="font-heading text-sm text-ink">
-                {p.eraTitle?.trim() || `The ${p.name} Era`}
-              </span>
+              <span className="font-heading text-sm text-ink">{p.eraTitle}</span>
               <span className="text-sepia text-xs" aria-hidden>♪</span>
             </Link>
           ))}
