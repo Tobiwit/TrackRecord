@@ -129,13 +129,20 @@ export function SpotifyEmbed({
   isNowPlayingBar?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  // browsers (especially mobile) may refuse autoplay without a fresh tap —
+  // when our play() call goes nowhere, nudge instead of failing silently
+  const [needsTap, setNeedsTap] = useState(false);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     let cancelled = false;
+    let started = false;
+    let nudgeTimer: ReturnType<typeof setTimeout> | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let controller: any = null;
+
+    setNeedsTap(false);
 
     // the API replaces the element we hand it, so give it a disposable child
     const mount = document.createElement("div");
@@ -150,9 +157,20 @@ export function SpotifyEmbed({
         (c: any) => {
           controller = c;
           if (isNowPlayingBar) activeEmbedController = c;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          c.addListener("playback_update", (e: any) => {
+            if (e?.data && e.data.isPaused === false) {
+              started = true;
+              if (!cancelled) setNeedsTap(false);
+            }
+          });
           if (autoplay) {
             c.addListener("ready", () => {
-              if (!cancelled) c.play();
+              if (cancelled) return;
+              c.play();
+              nudgeTimer = setTimeout(() => {
+                if (!cancelled && !started) setNeedsTap(true);
+              }, 2000);
             });
           }
         }
@@ -161,6 +179,7 @@ export function SpotifyEmbed({
 
     return () => {
       cancelled = true;
+      clearTimeout(nudgeTimer);
       if (isNowPlayingBar && activeEmbedController === controller) {
         activeEmbedController = null;
       }
@@ -173,7 +192,16 @@ export function SpotifyEmbed({
     };
   }, [spotifyId, height, autoplay, isNowPlayingBar]);
 
-  return <div ref={containerRef} style={{ minHeight: height }} />;
+  return (
+    <div>
+      <div ref={containerRef} style={{ minHeight: height }} />
+      {needsTap && (
+        <p className="font-hand text-base text-sepia leading-none mt-1 text-right rotate-[-1deg]">
+          your phone wants a tap — press play ♪
+        </p>
+      )}
+    </div>
+  );
 }
 
 function NowPlayingBar() {

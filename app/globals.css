@@ -43,9 +43,14 @@
 
 /* ---------- base ---------- */
 
-html,
-body {
+/* body must grow with the document — a fixed height makes the background
+   positioning area one viewport tall, so gradients repeat with a visible seam */
+html {
   height: 100%;
+}
+
+body {
+  min-height: 100%;
 }
 
 body {

@@ -49,14 +49,6 @@ export function Timeline({
     (p) => !p.active && p.eraTitle && posts.some((po) => po.personIds.includes(p.id))
   );
 
-  // columns: active people who actually appear in entries, max four
-  const columnPeople =
-    personFilter === "all"
-      ? activePeople.filter((p) => posts.some((po) => po.personIds.includes(p.id))).slice(0, 4)
-      : [];
-  const cols = columnPeople.length;
-  const grid = cols >= 2;
-
   const filtered = useMemo(() => {
     let list = [...posts];
     if (personFilter !== "all") list = list.filter((p) => p.personIds.includes(personFilter));
@@ -66,12 +58,56 @@ export function Timeline({
     return list;
   }, [posts, personFilter, typeFilter, moodFilter, order]);
 
+  /**
+   * Column scheduling: each person's single-person entries occupy a span of
+   * rows [first, last]. Columns are reused — a person whose span starts
+   * after another's has ended (e.g. an archived era) takes over that column,
+   * with their name as an inline header where their section begins.
+   */
+  const { assignments, colCount } = useMemo(() => {
+    const empty = { assignments: [] as { person: Person; col: number; first: number }[], colCount: 0 };
+    if (personFilter !== "all") return empty;
+
+    const intervals: { person: Person; first: number; last: number }[] = [];
+    for (const p of people) {
+      let first = -1;
+      let last = -1;
+      filtered.forEach((po, i) => {
+        if (po.personIds.length === 1 && po.personIds[0] === p.id) {
+          if (first < 0) first = i;
+          last = i;
+        }
+      });
+      if (first >= 0) intervals.push({ person: p, first, last });
+    }
+    // top of the page first; active people win ties
+    intervals.sort((a, b) => a.first - b.first || Number(b.person.active) - Number(a.person.active));
+
+    const colLast: number[] = [];
+    const assignments: { person: Person; col: number; first: number }[] = [];
+    for (const iv of intervals) {
+      let col = colLast.findIndex((last) => last < iv.first);
+      if (col >= 0) {
+        colLast[col] = Math.max(colLast[col], iv.last);
+      } else if (colLast.length < 4) {
+        col = colLast.length;
+        colLast.push(iv.last);
+      }
+      if (col >= 0) assignments.push({ person: iv.person, col, first: iv.first });
+    }
+    return { assignments, colCount: colLast.length };
+  }, [filtered, people, personFilter]);
+
+  const cols = colCount;
+  const grid = cols >= 2;
+  const colByPerson = new Map(assignments.map((a) => [a.person.id, a.col]));
+
   const usedMoods = Array.from(new Set(posts.map((p) => p.moodIcon)));
 
   /** column index for a post, or -1 for a full-width row */
   const colOf = (post: Post): number => {
     if (!grid || post.personIds.length !== 1) return -1;
-    return columnPeople.findIndex((p) => p.id === post.personIds[0]);
+    return colByPerson.get(post.personIds[0]) ?? -1;
   };
 
   return (
@@ -176,17 +212,22 @@ export function Timeline({
           className={`mt-6 space-y-5 ${grid ? "md:space-y-0 md:grid md:gap-x-4 md:gap-y-5" : ""}`}
           style={grid ? { gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` } : undefined}
         >
-          {/* column headers (desktop only) */}
+          {/* column headers (desktop only) — placed where each person's section starts */}
           {grid &&
-            columnPeople.map((p, i) => (
+            assignments.map(({ person: p, col, first }) => (
               <div
                 key={p.id}
-                className="hidden md:flex items-center gap-2 pb-1 border-b border-dashed"
-                style={{ gridColumn: i + 1, gridRow: 1, borderColor: `${accent(p.color).hex}77` }}
+                className={`hidden md:flex items-end gap-2 pb-1 border-b border-dashed ${first > 0 ? "mt-5" : ""}`}
+                style={{ gridColumn: col + 1, gridRow: 2 * first + 1, borderColor: `${accent(p.color).hex}77` }}
               >
                 <PersonAvatar person={p} size={26} />
-                <span className="font-heading text-ink truncate">{p.name}</span>
+                <span className={`font-heading truncate ${p.active ? "text-ink" : "text-ink-soft"}`}>{p.name}</span>
                 <span className="font-hand text-base text-sepia whitespace-nowrap">&apos;s side</span>
+                {!p.active && (
+                  <span className="font-type text-[9px] uppercase tracking-[0.14em] text-moongrey border border-moongrey/50 rounded-sm px-1 py-px whitespace-nowrap">
+                    archived
+                  </span>
+                )}
               </div>
             ))}
 
@@ -205,7 +246,7 @@ export function Timeline({
                 className={span && grid ? "md:flex md:justify-center" : undefined}
                 style={
                   grid
-                    ? { gridColumn: span ? "1 / -1" : col + 1, gridRow: i + 2 }
+                    ? { gridColumn: span ? "1 / -1" : col + 1, gridRow: 2 * i + 2 }
                     : undefined
                 }
               >
