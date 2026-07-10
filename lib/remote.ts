@@ -50,6 +50,7 @@ function rowToPerson(r: any): Person {
     firstDate: r.first_date != null ? Number(r.first_date) : undefined,
     color: r.color,
     active: r.active,
+    eraTitle: r.era_title ?? undefined,
     createdAt: Number(r.created_at),
   };
 }
@@ -66,6 +67,7 @@ function personToRow(p: Person): any {
     first_date: p.firstDate ?? null,
     color: p.color,
     active: p.active,
+    era_title: p.eraTitle ?? null,
     created_at: p.createdAt,
   };
 }

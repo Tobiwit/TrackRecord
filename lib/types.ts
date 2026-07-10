@@ -34,6 +34,8 @@ export interface Person {
   firstDate?: number;
   color: string; // accent color key, see lib/colors.ts
   active: boolean;
+  /** album name given when the era was archived ("pressed") */
+  eraTitle?: string;
   createdAt: number;
 }
 

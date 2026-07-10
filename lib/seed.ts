@@ -90,7 +90,7 @@ export function buildSeedDB(): DB {
       // Margot: the promising one
       { id: "p_sam", ownerUserId: "u_margot", name: "Sam", nickname: "farmers market Sam", age: 30, city: "two streets over", metWhere: "the farmers market", color: "sage", firstDate: now - 55 * DAY, active: true, createdAt: now - 58 * DAY },
       // Carmen: the dramatic ending
-      { id: "p_julian", ownerUserId: "u_carmen", name: "Julian", nickname: "him.", age: 33, city: "unfortunately nearby", metWhere: "a friend's birthday", color: "burnt", active: false, createdAt: now - 120 * DAY },
+      { id: "p_julian", ownerUserId: "u_carmen", name: "Julian", nickname: "him.", age: 33, city: "unfortunately nearby", metWhere: "a friend's birthday", color: "burnt", active: false, eraTitle: "A Vibe (Deluxe Edition)", createdAt: now - 120 * DAY },
       // Test user: partially filled stack
       { id: "p_alex", ownerUserId: "u_test", name: "Alex", nickname: "coffee shop Alex", city: "downtown", metWhere: "the coffee shop line", color: "gold", active: true, createdAt: now - 20 * DAY },
     ],

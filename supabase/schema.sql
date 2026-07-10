@@ -44,6 +44,7 @@ create table public.people (
   first_date bigint,
   color text not null,
   active boolean not null default true,
+  era_title text,
   created_at bigint not null
 );
 

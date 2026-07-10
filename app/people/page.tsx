@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Shell } from "@/components/Shell";
 import { PersonAvatar } from "@/components/Avatar";
 import { createPerson, deletePerson, peopleOf, postsOf, updatePerson, useStore } from "@/lib/db";
@@ -17,6 +19,7 @@ export default function PeoplePage() {
 
 function PeopleInner() {
   const { db, currentUser } = useStore();
+  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
 
   if (!currentUser) return null;
@@ -82,11 +85,28 @@ function PeopleInner() {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1 shrink-0 text-xs">
+                {!p.active && count > 0 && (
+                  <Link href={`/era/${p.id}`} className="underline text-espresso hover:text-burgundy">
+                    view the record ♪
+                  </Link>
+                )}
                 <button
-                  onClick={() => updatePerson(p.id, { active: !p.active })}
+                  onClick={() => {
+                    if (p.active) {
+                      const title = window.prompt(
+                        "Name this era before it goes on the shelf:",
+                        p.eraTitle ?? `The ${p.name} Era`
+                      );
+                      if (title === null) return;
+                      updatePerson(p.id, { active: false, eraTitle: title.trim() || undefined });
+                      router.push(`/era/${p.id}`);
+                    } else {
+                      updatePerson(p.id, { active: true });
+                    }
+                  }}
                   className="underline text-ink-soft hover:text-espresso"
                 >
-                  {p.active ? "archive era" : "revive era"}
+                  {p.active ? "press the record" : "revive era"}
                 </button>
                 <button
                   onClick={() => {

@@ -47,30 +47,30 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <PlayerProvider>
       <div className="min-h-screen md:flex">
         {/* ---- desktop sidebar ---- */}
-        <aside className="hidden md:flex md:flex-col w-64 shrink-0 newsprint border-r-0 p-5 gap-6 sticky top-0 h-screen overflow-y-auto scroll-thin shadow-[3px_0_12px_rgba(46,32,21,0.12)]">
+        <aside className="hidden md:flex md:flex-col w-64 shrink-0 newsprint border-r-0 px-4 py-3 gap-3 sticky top-0 h-screen overflow-y-auto scroll-thin shadow-[3px_0_12px_rgba(46,32,21,0.12)]">
           <div>
             <Link href="/home">
-              <h1 className="font-title text-[1.9rem] leading-tight text-ink">Track Record</h1>
+              <h1 className="font-title text-[1.7rem] leading-none text-ink">Track Record</h1>
             </Link>
-            <p className="cutout text-[11px] rotate-[-1.5deg] mt-1.5">
+            <p className="cutout text-[10px] rotate-[-1.5deg] mt-1">
               you could write songs about this bs
             </p>
           </div>
 
-          <nav className="space-y-0.5">
+          <nav>
             {NAV.map((item) => {
               const active = pathname?.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex flex-wrap items-baseline gap-x-2 rounded-sm px-3 py-1.5 transition-colors ${
+                  className={`flex flex-wrap items-baseline gap-x-2 rounded-sm px-2.5 py-1 transition-colors ${
                     active
                       ? "bg-ink/10 text-ink"
                       : "text-ink-soft hover:text-ink hover:bg-ink/5"
                   }`}
                 >
-                  <span className={`font-heading text-lg whitespace-nowrap ${active ? "italic" : ""}`}>{item.label}</span>
+                  <span className={`font-heading text-[17px] whitespace-nowrap ${active ? "italic" : ""}`}>{item.label}</span>
                   <span className="font-hand text-base text-sepia whitespace-nowrap">{item.hand}</span>
                 </Link>
               );
@@ -78,11 +78,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* user's own mini stack */}
-          <div className="mt-auto pt-4 border-t border-dashed ink-line">
-            <p className="font-hand text-xl text-sepia mb-2 rotate-[-2deg]">your spire ↓</p>
+          <div className="mt-auto pt-2 border-t border-dashed ink-line">
+            <p className="font-hand text-lg text-sepia mb-1 rotate-[-2deg] leading-none">your spire ↓</p>
             <Spire
               owner={currentUser}
-              posts={myPosts.slice(0, 4)}
+              posts={myPosts.slice(0, 3)}
               people={myPeople}
               mini
               onOpenPost={setOpenPost}

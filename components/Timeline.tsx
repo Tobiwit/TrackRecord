@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { Person, Post, User } from "@/lib/types";
 import { postDate } from "@/lib/types";
 import { accent } from "@/lib/colors";
@@ -12,10 +13,16 @@ import { Vinyl } from "./Vinyl";
 import { PersonAvatar, UserAvatar } from "./Avatar";
 import { usePlayer } from "./Player";
 
+const COL_TILT = [-0.6, 0.5, -0.4, 0.6];
+
 /**
  * Full vertical timeline with filters — the detail view behind each spire.
- * With two people, entries split into left/right columns; shared or general
- * updates sit in the center.
+ *
+ * Active people who appear in entries each get their own column (up to four
+ * on desktop) with a named header. Archived people give their column up:
+ * their entries stay in the flow as full-width rows, and their pressed-era
+ * records are linked above the filters. Multi-person entries also span the
+ * full width.
  */
 export function Timeline({
   owner,
@@ -37,9 +44,17 @@ export function Timeline({
   const { play, stop, song, playing } = usePlayer();
 
   const activePeople = people.filter((p) => p.active);
-  const stackPeopleIds = Array.from(new Set(posts.flatMap((p) => p.personIds)));
-  const columnPeople = people.filter((p) => stackPeopleIds.includes(p.id)).slice(0, 2);
-  const twoCol = columnPeople.length === 2 && personFilter === "all";
+  const archivedWithPosts = people.filter(
+    (p) => !p.active && posts.some((po) => po.personIds.includes(p.id))
+  );
+
+  // columns: active people who actually appear in entries, max four
+  const columnPeople =
+    personFilter === "all"
+      ? activePeople.filter((p) => posts.some((po) => po.personIds.includes(p.id))).slice(0, 4)
+      : [];
+  const cols = columnPeople.length;
+  const grid = cols >= 2;
 
   const filtered = useMemo(() => {
     let list = [...posts];
@@ -52,15 +67,14 @@ export function Timeline({
 
   const usedMoods = Array.from(new Set(posts.map((p) => p.moodIcon)));
 
-  const columnFor = (post: Post): "left" | "right" | "center" => {
-    if (!twoCol || post.personIds.length !== 1) return "center";
-    if (post.personIds[0] === columnPeople[0].id) return "left";
-    if (post.personIds[0] === columnPeople[1].id) return "right";
-    return "center";
+  /** column index for a post, or -1 for a full-width row */
+  const colOf = (post: Post): number => {
+    if (!grid || post.personIds.length !== 1) return -1;
+    return columnPeople.findIndex((p) => p.id === post.personIds[0]);
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto">
+    <div className={`p-4 md:p-8 mx-auto ${cols >= 3 ? "max-w-6xl" : "max-w-4xl"}`}>
       {/* profile header */}
       <div className="flex items-center gap-4 flex-wrap">
         <UserAvatar user={owner} size={64} />
@@ -69,7 +83,7 @@ export function Timeline({
           <p className="text-sepia font-type text-xs tracking-wide">@{owner.username}</p>
         </div>
         {activePeople.length > 0 && (
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 ml-auto flex-wrap">
             <span className="font-hand text-sepia text-xl rotate-[-2deg]">currently in the lore:</span>
             {activePeople.map((p) => (
               <span key={p.id} className="flex items-center gap-1" title={p.nickname ?? p.name}>
@@ -81,6 +95,26 @@ export function Timeline({
         )}
         {headerExtra}
       </div>
+
+      {/* pressed records (archived eras) */}
+      {archivedWithPosts.length > 0 && (
+        <div className="mt-4 flex items-center gap-2 flex-wrap">
+          <span className="font-hand text-lg text-sepia rotate-[-1deg]">from the shelf:</span>
+          {archivedWithPosts.map((p) => (
+            <Link
+              key={p.id}
+              href={`/era/${p.id}`}
+              className="flex items-center gap-1.5 paper-deep border border-ink/20 rounded-sm px-2 py-1 hover:border-ink/50 transition-colors"
+            >
+              <PersonAvatar person={p} size={20} />
+              <span className="font-heading text-sm text-ink">
+                {p.eraTitle?.trim() || `The ${p.name} Era`}
+              </span>
+              <span className="text-sepia text-xs" aria-hidden>♪</span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* filters */}
       <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
@@ -128,57 +162,62 @@ export function Timeline({
         </button>
       </div>
 
-      {/* column legend */}
-      {twoCol && (
-        <div className="mt-4 flex justify-between text-sm px-2">
-          {columnPeople.map((p, i) => (
-            <span key={p.id} className="flex items-center gap-1.5">
-              {i === 1 && <span className="text-sepia font-hand text-lg">the other line —</span>}
-              <PersonAvatar person={p} size={22} />
-              <span className="italic text-ink-soft">{p.name}&apos;s side</span>
-            </span>
-          ))}
-        </div>
-      )}
-
       {/* the timeline */}
-      <div className="relative mt-6">
-        {/* spine: a length of stitched thread */}
-        <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-px border-l border-dashed border-ink/30" aria-hidden />
-        <div className="space-y-6">
-          {filtered.length === 0 && (
-            <div className="paper rounded-sm max-w-sm mx-auto p-6 text-center relative" style={{ transform: "rotate(0.4deg)" }}>
-              <p className="font-heading text-xl text-ink">No updates yet.</p>
-              <p className="font-hand text-xl text-sepia mt-1 leading-snug">
-                Either peace has finally found you,
-                <br />
-                or you&apos;re gatekeeping the lore.
-              </p>
-            </div>
-          )}
-          {filtered.map((post) => {
-            const col = columnFor(post);
+      {filtered.length === 0 ? (
+        <div className="paper rounded-sm max-w-sm mx-auto p-6 text-center relative mt-8" style={{ transform: "rotate(0.4deg)" }}>
+          <p className="font-heading text-xl text-ink">No updates yet.</p>
+          <p className="font-hand text-xl text-sepia mt-1 leading-snug">
+            Either peace has finally found you,
+            <br />
+            or you&apos;re gatekeeping the lore.
+          </p>
+        </div>
+      ) : (
+        <div
+          className={`mt-6 space-y-5 ${grid ? "md:space-y-0 md:grid md:gap-x-4 md:gap-y-5" : ""}`}
+          style={grid ? { gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` } : undefined}
+        >
+          {/* column headers (desktop only) */}
+          {grid &&
+            columnPeople.map((p, i) => (
+              <div
+                key={p.id}
+                className="hidden md:flex items-center gap-2 pb-1 border-b border-dashed"
+                style={{ gridColumn: i + 1, gridRow: 1, borderColor: `${accent(p.color).hex}77` }}
+              >
+                <PersonAvatar person={p} size={26} />
+                <span className="font-heading text-ink truncate">{p.name}</span>
+                <span className="font-hand text-base text-sepia whitespace-nowrap">&apos;s side</span>
+              </div>
+            ))}
+
+          {filtered.map((post, i) => {
+            const col = colOf(post);
+            const span = col < 0;
             const isPlaying = song === post.song && playing;
             const postPeople = people.filter((p) => post.personIds.includes(p.id));
             const tapeCols = postPeople.map((p) => accent(p.color).hex);
             const event = post.eventType ? standardEvent(post.eventType) : undefined;
+            const tilt = span ? 0.2 : COL_TILT[col % COL_TILT.length];
+            const dense = grid && cols >= 3;
             return (
               <div
                 key={post.id}
-                className={`relative flex ${col === "left" ? "justify-start" : col === "right" ? "justify-end" : "justify-center"}`}
+                className={span && grid ? "md:flex md:justify-center" : undefined}
+                style={
+                  grid
+                    ? { gridColumn: span ? "1 / -1" : col + 1, gridRow: i + 2 }
+                    : undefined
+                }
               >
-                {/* node on the spine */}
-                <span
-                  className="absolute left-1/2 top-6 -translate-x-1/2 w-2.5 h-2.5 rounded-full border border-card"
-                  style={{ background: accent(postPeople[0]?.color ?? "gold").hex }}
-                  aria-hidden
-                />
                 <button
                   onClick={() => onOpenPost(post)}
                   onMouseEnter={() => play(post.song)}
                   onMouseLeave={() => isPlaying && stop()}
-                  className={`stack-card paper relative rounded-sm text-left p-4 w-full ${twoCol ? "md:w-[46%]" : "md:w-[70%]"}`}
-                  style={{ transform: `rotate(${col === "left" ? -0.6 : col === "right" ? 0.6 : 0.2}deg)` }}
+                  className={`stack-card paper relative rounded-sm text-left w-full ${dense ? "p-3" : "p-4"} ${
+                    grid ? (span ? "md:w-[70%]" : "") : "md:w-[70%] md:mx-auto block"
+                  }`}
+                  style={{ transform: `rotate(${tilt}deg)` }}
                 >
                   {tapeCols.length >= 2 ? (
                     <>
@@ -187,7 +226,7 @@ export function Timeline({
                     </>
                   ) : (
                     <span
-                      className="tape w-12 -top-1.5 left-5 rotate-[-8deg]"
+                      className={`tape ${dense ? "w-9" : "w-12"} -top-1.5 left-5 rotate-[-8deg]`}
                       style={{ background: `${tapeCols[0] ?? accent("moon").hex}66` }}
                       aria-hidden
                     />
@@ -201,13 +240,17 @@ export function Timeline({
                             {event.label}
                           </span>
                         )}
-                        <h3 className="font-heading text-xl text-ink leading-snug mt-0.5">{post.title}</h3>
+                        <h3 className={`font-heading text-ink leading-snug mt-0.5 ${dense ? "text-lg" : "text-xl"}`}>{post.title}</h3>
                       </div>
                       <span className="text-espresso shrink-0 flex flex-col items-center" title={mood(post.moodIcon).label}>
                         <MoodIcon moodKey={post.moodIcon} className="w-5 h-5" />
                       </span>
                     </div>
-                    {post.text && <p className="mt-1.5 text-[15px] text-ink-soft italic line-clamp-3">{post.text}</p>}
+                    {post.text && (
+                      <p className={`mt-1.5 text-ink-soft italic ${dense ? "text-sm line-clamp-2" : "text-[15px] line-clamp-3"}`}>
+                        {post.text}
+                      </p>
+                    )}
                     <div className="mt-2 pt-2 border-t border-dashed ink-line flex items-center gap-2">
                       <span
                         onClick={(e) => {
@@ -217,10 +260,10 @@ export function Timeline({
                         role="button"
                         aria-label={isPlaying ? "stop song" : "play song"}
                       >
-                        <Vinyl size={30} spinning={isPlaying} labelColor={accent(postPeople[0]?.color ?? "gold").hex} />
+                        <Vinyl size={dense ? 26 : 30} spinning={isPlaying} labelColor={accent(postPeople[0]?.color ?? "gold").hex} />
                       </span>
                       <p className="text-sm text-ink-soft truncate">
-                        <span className="font-heading text-ink text-[15px]">{post.song.title}</span>
+                        <span className={`font-heading text-ink ${dense ? "text-sm" : "text-[15px]"}`}>{post.song.title}</span>
                         <span className="italic"> — {post.song.artist}</span>
                       </p>
                       {postPeople.length > 0 && (
@@ -237,7 +280,7 @@ export function Timeline({
             );
           })}
         </div>
-      </div>
+      )}
     </div>
   );
 }
