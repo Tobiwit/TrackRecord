@@ -158,7 +158,14 @@ export async function remoteSignup(input: {
   const { data: taken } = await sb.rpc("get_email_for_username", { uname });
   if (taken) return { ok: false, error: "That username is already on the record." };
 
-  const { data, error } = await sb.auth.signUp({ email: input.email.trim(), password: input.password });
+  // keep the chosen name in auth metadata so the profile row can be
+  // (re)created later even if signup ends before a session exists
+  // (e.g. when "Confirm email" is enabled)
+  const { data, error } = await sb.auth.signUp({
+    email: input.email.trim(),
+    password: input.password,
+    options: { data: { username: uname, display_name: input.displayName.trim() } },
+  });
   if (error) return { ok: false, error: error.message };
   if (!data.session || !data.user) {
     return { ok: false, error: "Account created — confirm your email, then log in." };
@@ -192,6 +199,43 @@ export async function remoteLogout(): Promise<void> {
 
 // ---------- reads ----------
 
+/**
+ * Guarantee the signed-in user has a profile row. Signups that ended before
+ * a session existed (email confirmation enabled) never got one — without it
+ * the app has no current user and bounces back to the login screen.
+ */
+async function ensureOwnProfile(sb: any, userId: string, profileRows: any[]): Promise<any[]> {
+  if (profileRows.some((r) => r.id === userId)) return profileRows;
+
+  const { data } = await sb.auth.getUser();
+  const authUser = data?.user;
+  if (!authUser) return profileRows;
+  const meta = authUser.user_metadata ?? {};
+  const email: string = authUser.email ?? "";
+  const fallback = email.split("@")[0] || "listener";
+
+  const row: any = {
+    id: userId,
+    username: String(meta.username ?? fallback).toLowerCase(),
+    display_name: String(meta.display_name ?? meta.username ?? fallback),
+    email,
+    profile_picture_url: null,
+    spotify_connected: false,
+    created_at: Date.now(),
+  };
+  let { error } = await sb.from("profiles").insert(row);
+  if (error?.code === "23505") {
+    // username taken in the meantime — suffix and retry once
+    row.username = `${row.username}_${Math.random().toString(36).slice(2, 6)}`;
+    ({ error } = await sb.from("profiles").insert(row));
+  }
+  if (error) {
+    console.error("[track-record] could not create profile:", error.message ?? error);
+    return profileRows;
+  }
+  return [...profileRows, row];
+}
+
 /** Load everything the signed-in user can see into one DB snapshot. */
 export async function fetchRemoteDB(userId: string): Promise<DB> {
   const sb = getSupabase();
@@ -210,13 +254,14 @@ export async function fetchRemoteDB(userId: string): Promise<DB> {
   );
   const ownerIds = [userId, ...friendIds];
 
-  const [{ data: profileRows }, { data: peopleRows }, { data: postRows }, { data: seenRows }] =
+  const [{ data: rawProfileRows }, { data: peopleRows }, { data: postRows }, { data: seenRows }] =
     await Promise.all([
       sb.from("profiles").select("*").in("id", partyIds),
       sb.from("people").select("*").in("owner_user_id", ownerIds),
       sb.from("posts").select("*").in("owner_user_id", ownerIds),
       sb.from("seen_marks").select("*").eq("viewer_id", userId),
     ]);
+  const profileRows = await ensureOwnProfile(sb, userId, rawProfileRows ?? []);
 
   const posts = (postRows ?? []).map(rowToPost);
   const postIds = posts.map((p) => p.id);
