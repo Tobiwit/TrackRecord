@@ -10,13 +10,17 @@ import { Spire } from "./Spire";
 import { EntryModal } from "./EntryModal";
 
 const NAV = [
-  { href: "/home", label: "Home", hand: "the gallery" },
-  { href: "/me", label: "My Track Record", hand: "your lore" },
-  { href: "/new", label: "New Update", hand: "add a track" },
-  { href: "/people", label: "People", hand: "the cast" },
-  { href: "/friends", label: "Friends", hand: "the audience" },
-  { href: "/settings", label: "Settings", hand: "backstage" },
+  { href: "/home", label: "Home", hand: "the gallery", short: "Home" },
+  { href: "/me", label: "My Track Record", hand: "your lore", short: "Mine" },
+  { href: "/record", label: "The Record", hand: "one big vinyl", short: "Record" },
+  { href: "/new", label: "New Update", hand: "add a track", short: "New" },
+  { href: "/people", label: "People", hand: "the cast", short: "People" },
+  { href: "/friends", label: "Friends", hand: "the audience", short: "Friends" },
+  { href: "/settings", label: "Settings", hand: "backstage", short: "Settings" },
 ];
+
+/** Settings lives in the sidebar only — the bottom bar has no room for it. */
+const MOBILE_NAV = NAV.filter((item) => item.href !== "/settings");
 
 /**
  * Authenticated app frame: vintage sidebar on desktop (including the user's
@@ -105,15 +109,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
         {/* ---- mobile bottom nav ---- */}
         <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 newsprint border-x-0 border-b-0 shadow-[0_-3px_10px_rgba(46,32,21,0.12)] flex justify-around items-end py-2">
-          {NAV.slice(0, 5).map((item) => {
+          {MOBILE_NAV.map((item) => {
             const active = pathname?.startsWith(item.href);
-            const short = item.href === "/me" ? "Mine" : item.label.split(" ")[0];
             const isNew = item.href === "/new";
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center px-2 ${
+                className={`flex flex-col items-center px-1.5 ${
                   isNew ? "-mt-4" : active ? "text-ink" : "text-ink-soft/80"
                 }`}
               >
@@ -123,7 +126,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   </span>
                 ) : (
                   <>
-                    <span className={`font-heading text-base ${active ? "italic" : ""}`}>{short}</span>
+                    <span className={`font-heading text-[15px] ${active ? "italic" : ""}`}>
+                      {item.short}
+                    </span>
                     <span className={`block w-1 h-1 rounded-full mt-0.5 ${active ? "bg-burgundy" : "bg-transparent"}`} />
                   </>
                 )}

@@ -192,6 +192,154 @@ h3 {
   }
 }
 
+/* ---------- the big record (/record) ---------- */
+
+/* A full-size record turns slowly enough to read the label. Pausing freezes
+   the animation in place, so playback and rotation resume together. */
+.record-spin {
+  animation: vinyl-spin 26s linear infinite;
+  will-change: transform;
+}
+
+.record-spin.is-paused {
+  animation-play-state: paused;
+}
+
+/* interactive grooves */
+.groove {
+  cursor: pointer;
+  outline: none;
+}
+
+.groove .groove-arc,
+.groove .groove-gloss,
+.groove .groove-ring,
+.groove .groove-label {
+  transition:
+    opacity 0.28s ease,
+    stroke-width 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    stroke-opacity 0.28s ease;
+}
+
+.groove .groove-arc {
+  opacity: 0.82;
+}
+.groove .groove-gloss {
+  opacity: 0.45;
+}
+/* cream on the vinyl — 0.58 is where the resting label clears 4.5:1 */
+.groove .groove-label {
+  opacity: 0.58;
+}
+
+.groove[data-dimmed] .groove-arc {
+  opacity: 0.34;
+}
+.groove[data-dimmed] .groove-gloss {
+  opacity: 0.16;
+}
+.groove[data-dimmed] .groove-label {
+  opacity: 0.22;
+}
+
+.groove[data-emphasized] .groove-arc {
+  opacity: 1;
+}
+.groove[data-emphasized] .groove-gloss {
+  opacity: 0.8;
+}
+.groove[data-emphasized] .groove-label {
+  opacity: 0.95;
+}
+
+/* keyboard focus: the site's burgundy ring, drawn around the groove itself */
+.groove:focus-visible .groove-ring {
+  stroke: var(--color-burgundy);
+  stroke-opacity: 0.9;
+  stroke-dasharray: 5 6;
+}
+
+/* the spindle play/pause control */
+.record-spindle {
+  background: rgba(16, 12, 8, 0.72);
+  color: #f4edda;
+  border: 1px solid rgba(244, 237, 218, 0.45);
+  opacity: 0.72;
+  /* Tailwind centres this with the `translate` property, so scale on its own
+     axis keeps the two from fighting */
+  transition: opacity 0.2s ease, scale 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.record-spindle:hover {
+  opacity: 1;
+  scale: 1.06;
+}
+
+.record-spindle:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--color-burgundy);
+  outline-offset: 3px;
+}
+
+/* artwork swapping into the centre label */
+@keyframes record-art-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.art-swap {
+  animation: record-art-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: 500px 500px;
+}
+
+/* the sleeve insert settling in when the selection changes */
+@keyframes liner-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.liner-notes {
+  animation: liner-in 0.3s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .record-spin {
+    animation: none;
+  }
+  .groove .groove-arc,
+  .groove .groove-gloss,
+  .groove .groove-ring,
+  .groove .groove-label {
+    transition: opacity 0.2s ease;
+  }
+  /* artwork still changes — it just fades instead of easing in */
+  .art-swap {
+    animation: record-art-fade 0.2s linear both;
+  }
+  .record-spindle:hover {
+    scale: 1;
+  }
+}
+
+@keyframes record-art-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* ---------- card stack hover ---------- */
 
 .stack-card {

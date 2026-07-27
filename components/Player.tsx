@@ -18,7 +18,10 @@ interface PlayerState {
   song: Song | null;
   playing: boolean;
   play: (song: Song) => void;
+  /** Pause, keeping the position so `resume()` can pick it back up. */
   stop: () => void;
+  /** Continue the paused track; restarts it if the position was lost. */
+  resume: () => void;
   clear: () => void;
 }
 
@@ -27,6 +30,7 @@ const PlayerContext = createContext<PlayerState>({
   playing: false,
   play: () => {},
   stop: () => {},
+  resume: () => {},
   clear: () => {},
 });
 
@@ -38,10 +42,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [song, setSong] = useState<Song | null>(null);
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  /** mirrors `song` so resume() can read it without re-creating callbacks */
+  const songRef = useRef<Song | null>(null);
 
   const stop = useCallback(() => {
+    // keep the element around — resume() continues from where it stopped
     audioRef.current?.pause();
-    audioRef.current = null;
     pauseActiveEmbed();
     setPlaying(false);
   }, []);
@@ -51,12 +57,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     audioRef.current = null;
     pauseActiveEmbed();
     setPlaying(false);
+    songRef.current = null;
     setSong(null);
   }, []);
 
   const play = useCallback((s: Song) => {
     audioRef.current?.pause();
     audioRef.current = null;
+    songRef.current = s;
     setSong(s);
     setPlaying(true);
     if (s.previewUrl) {
@@ -70,10 +78,30 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const resume = useCallback(() => {
+    const audio = audioRef.current;
+    if (audio && !audio.ended) {
+      audio.play().catch(() => {
+        /* autoplay blocked — the vinyl still spins */
+      });
+      setPlaying(true);
+      return;
+    }
+    // the preview ran to the end — start it over
+    const current = songRef.current;
+    if (current?.previewUrl) {
+      play(current);
+      return;
+    }
+    // a Spotify embed, or a song with no audio at all: the vinyl carries it
+    resumeActiveEmbed();
+    if (current) setPlaying(true);
+  }, [play]);
+
   useEffect(() => () => audioRef.current?.pause(), []);
 
   return (
-    <PlayerContext.Provider value={{ song, playing, play, stop, clear }}>
+    <PlayerContext.Provider value={{ song, playing, play, stop, resume, clear }}>
       {children}
       <NowPlayingBar />
     </PlayerContext.Provider>
@@ -95,6 +123,14 @@ let activeEmbedController: any = null;
 function pauseActiveEmbed() {
   try {
     activeEmbedController?.pause();
+  } catch {
+    /* iframe already gone */
+  }
+}
+
+function resumeActiveEmbed() {
+  try {
+    activeEmbedController?.resume();
   } catch {
     /* iframe already gone */
   }

@@ -30,15 +30,18 @@ export function Timeline({
   people,
   onOpenPost,
   headerExtra,
+  initialPerson,
 }: {
   owner: User;
   posts: Post[];
   people: Person[];
   onOpenPost: (p: Post) => void;
   headerExtra?: React.ReactNode;
+  /** person id to open the timeline already filtered to — e.g. from /record */
+  initialPerson?: string;
 }) {
   const [order, setOrder] = useState<"newest" | "oldest">("newest");
-  const [personFilter, setPersonFilter] = useState<string>("all");
+  const [personFilter, setPersonFilter] = useState<string>(initialPerson ?? "all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [moodFilter, setMoodFilter] = useState<string>("all");
   const { play, stop, song, playing } = usePlayer();
